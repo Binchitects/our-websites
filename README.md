@@ -105,8 +105,10 @@ gives it a page: [binchitects.com](https://binchitects.com).
 
    Traefik terminates TLS with that certificate for both hostnames, routes each
    to its image, and redirects HTTP to HTTPS. The API is never published; only
-   80/443 are. Certificate renewal is yours: replace the files and
-   `docker compose restart edge`.
+   80/443 are. Behind Cloudflare, `CF-Ray` requests are served directly over the
+   proxied HTTP hop, so Flexible or a tunnel on port 80 does not loop; Full
+   (strict) is still the recommended mode. Certificate renewal is yours: replace
+   the files and `docker compose restart edge`.
    See [`docs/DEPLOYMENT.md`](docs/DEPLOYMENT.md) for the certificate check,
    local trial, backups and hardening.
 

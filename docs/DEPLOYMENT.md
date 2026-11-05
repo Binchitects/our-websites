@@ -45,20 +45,25 @@ the certificate.
 
 ### Behind Cloudflare
 
-If the DNS record is proxied (orange cloud), Cloudflare must connect to the
-origin over **443**, not 80:
+If the DNS record is proxied (orange cloud), Cloudflare should connect to the
+origin over **443**:
 
 - **SSL/TLS → Overview**: choose **Full (strict)**. Use **Full** only if the
-  origin certificate is self-signed. **Flexible** makes Cloudflare speak HTTP to
-  the origin, Traefik answers `308` to the same HTTPS URL, and the browser loops
-  with `ERR_TOO_MANY_REDIRECTS`.
+  origin certificate is self-signed.
 - **Cloudflare Tunnel**: set the public hostname's service to
-  `https://localhost:443`, not `http://localhost:80` (turn on *No TLS Verify* if
-  the origin uses a self-signed or Cloudflare Origin CA certificate).
+  `https://localhost:443` (turn on *No TLS Verify* if the origin uses a
+  self-signed or Cloudflare Origin CA certificate).
 - **Origin Rules**: point the origin port at 443.
 - A **Cloudflare Origin Certificate** is trusted by Cloudflare in Full (strict)
   mode even though public clients do not trust it; put its certificate and key
   at the paths in `.env` and restart the edge.
+
+The edge is also tolerant of a Cloudflare proxy that still reaches the origin
+over HTTP (`Flexible`, or a tunnel pointed at port 80). Cloudflare sends
+`CF-Ray` on every proxied request; those HTTP requests are served directly
+instead of redirected, so the browser does not loop. Direct HTTP visitors are
+still redirected to HTTPS. **Full (strict) remains the recommended mode**, since
+it encrypts the Cloudflare-to-origin hop too.
 
 Cloudflare's **Always Use HTTPS** can stay on. Purge the cache after changing
 the mode.
@@ -253,9 +258,11 @@ Anything under ASP.NET's `Site:` section can be set with
 
 ## 10. Troubleshooting
 
-**`ERR_TOO_MANY_REDIRECTS` behind Cloudflare** — Cloudflare is in Flexible mode
-or the tunnel/Origin Rule points at port 80. See
-[Behind Cloudflare](#behind-cloudflare); the origin must be reached on 443.
+**`ERR_TOO_MANY_REDIRECTS` behind Cloudflare** — the stack serves `CF-Ray`
+requests over HTTP without redirecting, so first make sure the new edge is
+running (`docker compose up -d`, then purge the Cloudflare cache). If it
+persists, set SSL/TLS to **Full (strict)** or point the tunnel/Origin Rule at
+443. See [Behind Cloudflare](#behind-cloudflare).
 
 **`docker compose up` fails on the certificate** — one of the bind-mount paths
 does not exist. Check `TLS_CERT_FILE` / `TLS_KEY_FILE`, and that the files contain

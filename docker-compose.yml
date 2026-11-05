@@ -15,9 +15,6 @@ services:
       - --providers.docker.exposedbydefault=false
       - --providers.file.filename=/etc/traefik/dynamic.yml
       - --entrypoints.web.address=:80
-      - --entrypoints.web.http.redirections.entrypoint.to=websecure
-      - --entrypoints.web.http.redirections.entrypoint.scheme=https
-      - --entrypoints.web.http.redirections.entrypoint.permanent=true
       - --entrypoints.websecure.address=:443
     ports:
       - "${HTTP_PORT:-80}:80"
@@ -93,6 +90,16 @@ services:
       traefik.http.routers.binchitects.entrypoints: websecure
       traefik.http.routers.binchitects.tls: "true"
       traefik.http.services.binchitects.loadbalancer.server.port: "8080"
+      # HTTP redirects to HTTPS, except when Cloudflare is proxying to the
+      # origin over HTTP (Flexible mode or a tunnel on port 80). That request
+      # carries CF-Ray; redirecting it would loop at the edge.
+      traefik.http.routers.binchitects-http.rule: Host(`${BINCHIECTS_DOMAIN:-binchitects.com}`) && !HeaderRegexp(`Cf-Ray`, `.+`)
+      traefik.http.routers.binchitects-http.entrypoints: web
+      traefik.http.routers.binchitects-http.middlewares: redirect-https
+      traefik.http.routers.binchitects-http.service: binchitects
+      traefik.http.routers.binchitects-http-cf.rule: Host(`${BINCHIECTS_DOMAIN:-binchitects.com}`) && HeaderRegexp(`Cf-Ray`, `.+`)
+      traefik.http.routers.binchitects-http-cf.entrypoints: web
+      traefik.http.routers.binchitects-http-cf.service: binchitects
     restart: unless-stopped
     read_only: true
     tmpfs:
@@ -124,6 +131,17 @@ services:
       traefik.http.routers.argus.entrypoints: websecure
       traefik.http.routers.argus.tls: "true"
       traefik.http.services.argus.loadbalancer.server.port: "8080"
+      # The same rule: direct HTTP is upgraded; Cloudflare-proxied HTTP is
+      # served, because Cloudflare already secures the visitor connection.
+      traefik.http.routers.argus-http.rule: Host(`${ARGUS_DOMAIN:-argus.binchitects.com}`) && !HeaderRegexp(`Cf-Ray`, `.+`)
+      traefik.http.routers.argus-http.entrypoints: web
+      traefik.http.routers.argus-http.middlewares: redirect-https
+      traefik.http.routers.argus-http.service: argus
+      traefik.http.routers.argus-http-cf.rule: Host(`${ARGUS_DOMAIN:-argus.binchitects.com}`) && HeaderRegexp(`Cf-Ray`, `.+`)
+      traefik.http.routers.argus-http-cf.entrypoints: web
+      traefik.http.routers.argus-http-cf.service: argus
+      traefik.http.middlewares.redirect-https.redirectscheme.scheme: https
+      traefik.http.middlewares.redirect-https.redirectscheme.permanent: "true"
     restart: unless-stopped
     read_only: true
     tmpfs:
