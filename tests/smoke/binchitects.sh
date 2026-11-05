@@ -4,14 +4,15 @@
 set -euo pipefail
 
 BASE_URL="${BASE_URL:-http://127.0.0.1:8100}"
+CURL_OPTS="${CURL_OPTS:-}"
 tmp="$(mktemp -d)"
 trap 'rm -rf "$tmp"' EXIT
 
 fail() { echo "FAIL: $*" >&2; exit 1; }
 pass() { echo "ok   $*"; }
 
-fetch() { curl -sS -D "$tmp/headers" -o "$tmp/body" "$@"; }
-code() { curl -sS -o /dev/null -w '%{http_code}' "$@"; }
+fetch() { curl $CURL_OPTS -sS -D "$tmp/headers" -o "$tmp/body" "$@"; }
+code() { curl $CURL_OPTS -sS -o /dev/null -w '%{http_code}' "$@"; }
 
 echo "Binchitects smoke test against $BASE_URL"
 

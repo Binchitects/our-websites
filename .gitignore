@@ -10,10 +10,13 @@ obj/
 *.user
 TestResults/
 
-# Local configuration and data
+# Local configuration, certificates and data
 .env
 src/api/data/
 data/
+deploy/tls/*.pem
+deploy/tls/*.crt
+deploy/tls/*.key
 
 # Editors and systems
 .DS_Store

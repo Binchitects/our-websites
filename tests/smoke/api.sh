@@ -5,6 +5,7 @@
 set -euo pipefail
 
 BASE_URL="${BASE_URL:-http://127.0.0.1:8080}"
+CURL_OPTS="${CURL_OPTS:-}"
 SKIP_RATE_LIMIT="${SKIP_RATE_LIMIT:-0}"
 tmp="$(mktemp -d)"
 trap 'rm -rf "$tmp"' EXIT
@@ -12,7 +13,7 @@ trap 'rm -rf "$tmp"' EXIT
 fail() { echo "FAIL: $*" >&2; exit 1; }
 pass() { echo "ok   $*"; }
 
-status() { curl -sS -o "$tmp/body" -w '%{http_code}' "$@"; }
+status() { curl $CURL_OPTS -sS -o "$tmp/body" -w '%{http_code}' "$@"; }
 
 echo "API smoke test against $BASE_URL"
 

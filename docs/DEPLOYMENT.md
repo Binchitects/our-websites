@@ -1,23 +1,49 @@
-# Deploying the site
+# Deploying the two sites
 
-The stack is three images with no external runtime dependency: `binchitects`
-(the studio page, static), `web` (the Argus React build served by unprivileged
-nginx, proxying `/api` to `api`) and `api` (.NET 10). This page covers a real
-deployment at `binchitects.com` and `argus.binchitects.com`, backups, updates
-and hardening.
+One Compose stack: **Traefik** terminates TLS with a certificate you supply,
+routes each hostname to its own web image, and redirects HTTP to HTTPS.
+**binchitects** serves the studio page, **web** serves Argus and proxies `/api`
+to **api** (.NET 10). There is no certificate authority, no ACME account and no
+external runtime dependency.
 
-## 1. The host
+A deployment is three things: DNS, a certificate covering both names, and a
+`.env`. Then `docker compose up`.
 
-- Linux, Docker Engine 24+ and the Compose plugin.
-- 1 vCPU / 512 MB RAM is enough; the images are small and the API is idle.
-- Ports 80 and 443 reachable if Caddy terminates TLS. If a load balancer or an
-  existing reverse proxy does, only the internal web port is needed.
-- DNS `A` records for `argus.binchitects.com`, `binchitects.com` and
-  `www.binchitects.com` pointing at the host (an `AAAA` too if the host has
-  IPv6). Caddy needs the records to answer the ACME challenges; it cannot get a
-  certificate for a name that does not resolve here.
+## 1. DNS
 
-## 2. First deploy with automatic TLS
+Point these at the host, with `A` records (and `AAAA` if the host has IPv6):
+
+- `argus.binchitects.com` — the Argus host (`ARGUS_DOMAIN`)
+- `binchitects.com` — the studio apex (`BINCHIECTS_DOMAIN`)
+
+Ports 80 and 443 must reach the host. Traefik redirects all port-80 requests to
+HTTPS; it does not need port 80 for a certificate challenge.
+
+## 2. The certificate
+
+Put one certificate and key on the host. Both names must be in the certificate
+as SANs (a wildcard for `*.binchitects.com` alone does **not** cover the apex):
+
+```bash
+ls deploy/tls/fullchain.pem deploy/tls/privkey.pem
+openssl x509 -in deploy/tls/fullchain.pem -noout -subject -ext subjectAltName
+```
+
+Expected SANs:
+
+```
+DNS:argus.binchitects.com, DNS:binchitects.com
+```
+
+Point Traefik elsewhere with `TLS_CERT_FILE` and `TLS_KEY_FILE` if the files live
+outside the repository; relative paths are resolved from the compose file.
+The private key is read by the edge container through a read-only bind mount.
+
+There is no automatic renewal. Replace the two files and restart the edge
+(`docker compose restart edge`). Do this before expiry, from whatever issued
+the certificate.
+
+## 3. First deploy
 
 ```bash
 git clone <this repository> argus-site && cd argus-site
@@ -27,46 +53,83 @@ cp .env.example .env
 Edit `.env`:
 
 ```dotenv
-SITE_DOMAIN=argus.binchitects.com
+ARGUS_DOMAIN=argus.binchitects.com
 BINCHIECTS_DOMAIN=binchitects.com
+TLS_CERT_FILE=./deploy/tls/fullchain.pem
+TLS_KEY_FILE=./deploy/tls/privkey.pem
+HTTP_PORT=80
+HTTPS_PORT=443
 IP_HASH_SALT=<openssl rand -hex 32>
-ADMIN_TOKEN=<openssl rand -hex 32>
-CONTACT_WEBHOOK_URL=            # optional
-GITHUB_TOKEN=                   # optional, for the changelog feed
+ADMIN_TOKEN=<openssl rand -hex 32>          # optional, enables the CSV export
 ```
 
 Then:
 
 ```bash
-docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d --build
+docker compose up -d --build      # or `docker compose up --build` in the foreground
 docker compose ps
 curl -fsS https://argus.binchitects.com/api/health
-curl -fsS https://binchitects.com/ | head -5
+curl -fsS https://binchitects.com/ >/dev/null
 ```
 
-Caddy stores certificates in the `caddy-data` volume. Keep it: removing it makes
-Caddy ask Let's Encrypt again, and there are rate limits.
+Traefik obtains nothing and stores no state; the certificate is the one you
+mounted. The API is never published: only Traefik's 80/443 are.
 
-**TLS somewhere else instead.** Skip `docker-compose.prod.yml` and point your own
-terminator at `127.0.0.1:8080` for Argus and `127.0.0.1:8100` for the studio (or
-set the `*_HTTP_BIND` values to `0.0.0.0` on a trusted network). The Argus image
-already sends `X-Forwarded-Proto` to the API and trusts forwarded headers only
-from private networks, so keep the API unpublished.
+**Renew or replace the certificate**
 
-## 3. What runs
+```bash
+# copy the new fullchain.pem and privkey.pem into place, then:
+docker compose restart edge
+```
+
+## 4. A local trial
+
+A certificate with local names lets you run the real stack without DNS:
+
+```bash
+openssl req -x509 -nodes -newkey rsa:2048 -days 365 \
+  -keyout deploy/tls/privkey.pem -out deploy/tls/fullchain.pem \
+  -subj "/CN=binchitects.localhost" \
+  -addext "subjectAltName=DNS:argus.localhost,DNS:binchitects.localhost"
+
+cat > .env <<'ENV'
+ARGUS_DOMAIN=argus.localhost
+BINCHIECTS_DOMAIN=binchitects.localhost
+TLS_CERT_FILE=./deploy/tls/fullchain.pem
+TLS_KEY_FILE=./deploy/tls/privkey.pem
+HTTP_PORT=9080
+HTTPS_PORT=9443
+IP_HASH_SALT=local-salt
+ADMIN_TOKEN=local-token
+ENV
+
+docker compose up -d --build
+```
+
+Open <https://binchitects.localhost:9443> and
+<https://argus.localhost:9443>. Browsers resolve `*.localhost` to the loopback
+address; accept the self-signed certificate warning. If your browser does not
+resolve it, add both names to `/etc/hosts` as `127.0.0.1`.
+
+The HTTP entrypoint redirects to `https://host/` on port 443, not to the
+non-standard local HTTPS port. In a local trial, use the `https://…:9443` URL
+directly.
+
+## 5. What runs
 
 | Container | User | Port | Writes | Health |
 |---|---|---|---|---|
-| `argus-site-binchitects-1` | `nginx` (uid 100) | 8080 | `/tmp` only | `GET /healthz` |
-| `argus-site-web-1` | `nginx` (uid 100) | 8080 | `/tmp` only | `GET /healthz` |
+| `argus-site-edge-1` | root (key read only) | 80, 443 | nothing; `/tmp` | Traefik starts ready |
+| `argus-site-binchitects-1` | `nginx` (uid 100) | 8080, internal | `/tmp` only | `GET /healthz` |
+| `argus-site-web-1` | `nginx` (uid 100) | 8080, internal | `/tmp` only | `GET /healthz` |
 | `argus-site-api-1` | `10001:10001` | 8080, internal | `/data` volume | `GET /healthz` |
-| `argus-site-edge-1` (prod) | image default | 80, 443 | Caddy volumes | Caddy's own |
 
-All three app containers run read-only roots with all Linux capabilities dropped
-and `no-new-privileges`. The API is never published; only the two web ports
-(loopback by default) and, with the prod file, 80/443.
+The web and API containers run read-only roots with all Linux capabilities
+dropped and `no-new-privileges`. Traefik runs read-only with only
+`NET_BIND_SERVICE` and `DAC_OVERRIDE` (the latter so it can read a `0600` key),
+and the Docker socket mounted read-only.
 
-## 4. Data
+## 6. Data
 
 Contact requests live in the `site-data` volume at
 `/data/contact-requests.jsonl`: one JSON object per line, appended with a file
@@ -101,29 +164,30 @@ curl -fsS -H "X-Admin-Token: $ADMIN_TOKEN" \
 The endpoint is off (404) when `ADMIN_TOKEN` is empty. The token is compared in
 constant time, and the response is `no-store`.
 
-## 5. Updates
+## 7. Updates
 
 ```bash
 git pull
-docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d --build
+docker compose up -d --build
 ```
 
-The web image is replaced with no gap in serving; Caddy keeps certificates. The
-API restarts in a second. No data migration is involved.
+Compose replaces changed images; the edge re-reads the Docker labels when the
+new containers become healthy. Data is untouched. No migration is involved.
 
 Roll back by checking out the previous commit and repeating the command; the
-data file is forward compatible by design.
+contact file is forward compatible by design.
 
-## 6. Configuration reference
+## 8. Configuration reference
 
 | Variable | Default | Notes |
 |---|---|---|
-| `SITE_DOMAIN` | `argus.binchitects.com` | Argus host in the Caddyfile |
-| `BINCHIECTS_DOMAIN` | `binchitects.com` | Studio host in the Caddyfile; `www` redirects here |
-| `HTTP_BIND` | `127.0.0.1` | Set to `0.0.0.0` only behind a trusted network |
-| `HTTP_PORT` | `8080` | Host port for the Argus web image |
-| `BINCHIECTS_HTTP_BIND` | `127.0.0.1` | As above, for the studio image |
-| `BINCHIECTS_HTTP_PORT` | `8100` | Host port for the studio image |
+| `ARGUS_DOMAIN` | `argus.binchitects.com` | Host routed to the Argus image |
+| `BINCHIECTS_DOMAIN` | `binchitects.com` | Host routed to the studio image |
+| `TLS_CERT_FILE` | `./deploy/tls/fullchain.pem` | Certificate covering both names |
+| `TLS_KEY_FILE` | `./deploy/tls/privkey.pem` | Its private key |
+| `HTTP_PORT` | `80` | Host port for Traefik's HTTP entrypoint |
+| `HTTPS_PORT` | `443` | Host port for Traefik's HTTPS entrypoint |
+| `DOCKER_SOCKET` | `/var/run/docker.sock` | Rootless: `/run/user/1000/docker.sock` |
 | `IP_HASH_SALT` | empty | Set it; makes stored hashes non-linkable outside this deployment |
 | `ADMIN_TOKEN` | empty | Enables the CSV export; empty disables it |
 | `CONTACT_WEBHOOK_URL` | empty | JSON POST per enquiry, 5 s timeout, failures only logged |
@@ -132,53 +196,62 @@ data file is forward compatible by design.
 | `CONTACT_WINDOW_MINUTES` | `10` | Window length |
 | `IMAGE_TAG` | `local` | Use a registry tag for a release |
 
-Anything else under ASP.NET's `Site:` section can be set with
+Anything under ASP.NET's `Site:` section can be set with
 `Site__PropertyName`. The full set is in `src/api/Configuration/SiteOptions.cs`.
 
-## 7. Security notes
+## 9. Security notes
 
+- **TLS** is terminated by Traefik with your certificate; HTTP is permanently
+  redirected. The certificate and key are read-only mounts, never baked into an
+  image.
 - **CSP** is set by both nginx images (`src/web/nginx.conf` and
-  `src/binchitects/nginx.conf`). Scripts come only from the same origin; the
-  theme script is a file for that reason. Styles allow inline because React sets
-  style attributes. No frames, no objects, forms only to the same origin.
-- **Forwarded headers** are accepted only from private networks, so a direct
-  request to the API cannot spoof an address for the rate limiter.
+  `src/binchitects/nginx.conf`). Scripts come only from the same origin; styles
+  allow inline because React sets style attributes. No frames, no objects,
+  forms only to the same origin.
+- **Forwarded headers** from Traefik are accepted by the API only from private
+  networks, so a direct request cannot spoof an address for the rate limiter.
 - **Rate limiting** is a fixed window per address on `POST /api/contact`.
   Rejections answer `429` with `Retry-After` and a JSON body.
 - **Honeypot**: a hidden `website` field. A bot that fills it gets a normal
   `202` and nothing is stored.
-- **Spam heuristic**: more than four links in a message is refused with a
-  helpful message.
+- **Spam heuristic**: more than four links in a message is refused.
 - **Contact data** is minimised: the address is hashed, the user agent is
-  truncated, and nothing else is collected. See `/privacy` on the site.
-- **HSTS** is sent by nginx. It is ignored over plain HTTP, and effective once
-  the site is behind TLS. Remove the header from `nginx.conf` if the site will
-  ever be served over HTTP on a real hostname.
+  truncated, and nothing else is collected. See `/privacy`.
+- **HSTS** is sent by nginx. Remove the header if the site is ever served over
+  plain HTTP on a real hostname.
 - **Containers**: read-only roots, `cap_drop: ALL`, `no-new-privileges`,
-  non-root users, and only `/data` and `/tmp` writable.
+  non-root web users, and only `/data` and `/tmp` writable.
+- **Docker socket**: Traefik needs it to watch labels; it is mounted read-only
+  but still grants control of the daemon. Run the stack on a host you control.
 
-## 8. Troubleshooting
+## 10. Troubleshooting
 
-**`502 Bad Gateway` on `/api/...`** — the API is not up or not healthy:
-`docker compose ps`, `docker compose logs api`. The web image resolves it by the
-service name `api`; keep both on the `internal` network.
+**`docker compose up` fails on the certificate** — one of the bind-mount paths
+does not exist. Check `TLS_CERT_FILE` / `TLS_KEY_FILE`, and that the files contain
+both names. Traefik's logs say `error reading certificate`.
+
+**`404 page not found` from Traefik** — the Host does not match
+`ARGUS_DOMAIN` / `BINCHIECTS_DOMAIN`, or the container is not healthy. Check
+`docker compose ps` and `docker compose logs edge`.
+
+**`502 Bad Gateway` on `/api/...`** — the API is not healthy:
+`docker compose logs api`. The Argus image resolves it by the service name
+`api`; keep both on the `internal` network.
 
 **`502` on `binchitects.com`** — the studio image is not healthy. Check
-`docker compose ps binchitects` and `docker compose logs binchitects`. Caddy
-resolves it by the service name `binchitects`.
+`docker compose ps binchitects` and `docker compose logs binchitects`.
+
+**The browser warns about the certificate** — the supplied certificate does not
+cover the hostname, or it is a local self-signed certificate. Confirm the SANs
+with `openssl x509 -in … -noout -ext subjectAltName`.
 
 **The API exits with a permissions error on `/data`** — a bind mount was used
 without matching ownership. The named volume initialises itself; for a bind
 mount, `chown -R 10001:10001 ./data`.
-
-**Caddy keeps retrying the certificate** — DNS not propagated, port 80 closed,
-or the domain is proxied through a CDN that terminates TLS. Check
-`docker compose logs edge`.
 
 **The changelog shows the built-in list** — GitHub was unreachable from the
 container, or the anonymous rate limit was hit. Set `GITHUB_TOKEN`. The page
 falls back on purpose and retries after a minute.
 
 **Tests fail with 429** — the smoke script sends several contact requests from
-one address. Wait for the window, or raise `CONTACT_PERMIT_LIMIT` on a test
-deployment.
+one address. Wait for the window, or raise `CONTACT_PERMIT_LIMIT`.

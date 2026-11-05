@@ -6,8 +6,8 @@ help:
 	@echo "dev-bin   run the Binchitects site on :5174"
 	@echo "build     build all three Docker images"
 	@echo "test      type-check and test both sites, build the API"
-	@echo "up        build and start the stack (Argus :8080, Binchitects :8100)"
-	@echo "smoke     run the smoke tests against a running stack"
+	@echo "up        build and start the stack; HTTPS on HTTPS_PORT"
+	@echo "smoke     run the smoke tests (CURL_OPTS=-k for self-signed)"
 	@echo "down      stop the stack"
 
 dev-api:
@@ -28,14 +28,17 @@ test:
 	dotnet build src/api/Argus.Site.Api.csproj -c Release
 
 up:
-	docker compose up -d --build --wait
-	@echo "Argus:       http://127.0.0.1:$${HTTP_PORT:-8080}"
-	@echo "Binchitects: http://127.0.0.1:$${BINCHIECTS_HTTP_PORT:-8100}"
+	docker compose up -d --build --wait --wait-timeout 180
+	@set -a; . ./.env; set +a; \
+	echo "Argus:       https://$${ARGUS_DOMAIN}:$${HTTPS_PORT}"; \
+	echo "Binchitects: https://$${BINCHIECTS_DOMAIN}:$${HTTPS_PORT}"
 
 smoke:
-	BASE_URL=http://127.0.0.1:$${HTTP_PORT:-8080} tests/smoke/web.sh
-	BASE_URL=http://127.0.0.1:$${HTTP_PORT:-8080} ADMIN_TOKEN=$${ADMIN_TOKEN:-} tests/smoke/api.sh
-	BASE_URL=http://127.0.0.1:$${BINCHIECTS_HTTP_PORT:-8100} tests/smoke/binchitects.sh
+	@set -a; . ./.env; set +a; \
+	BASE_URL="https://$${ARGUS_DOMAIN}:$${HTTPS_PORT}" CURL_OPTS="$${CURL_OPTS:-}" tests/smoke/web.sh; \
+	BASE_URL="https://$${ARGUS_DOMAIN}:$${HTTPS_PORT}" ADMIN_TOKEN="$${ADMIN_TOKEN:-}" \
+		CURL_OPTS="$${CURL_OPTS:-}" tests/smoke/api.sh; \
+	BASE_URL="https://$${BINCHIECTS_DOMAIN}:$${HTTPS_PORT}" CURL_OPTS="$${CURL_OPTS:-}" tests/smoke/binchitects.sh
 
 down:
 	docker compose down

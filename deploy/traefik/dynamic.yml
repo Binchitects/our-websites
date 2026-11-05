@@ -1,0 +1,9 @@
+# The shared certificate: one certificate covering both hostnames named in
+# .env (SANs for the Argus host and the studio apex). Traefik selects it by SNI.
+tls:
+  certificates:
+    - certFile: /certs/cert.pem
+      keyFile: /certs/key.pem
+  options:
+    default:
+      minVersion: VersionTLS12

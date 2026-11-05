@@ -20,15 +20,13 @@ Three images, built from this repository, deployed together.
 </p>
 
 ```
-  browser ────►  binchitects  (nginx, :8080)  ──►  static studio page
-
-                ┌──────────────────────┐        ┌──────────────────────┐
-  browser ────► │ web  (nginx, :8080)  │ ─────► │ api  (.NET 10, :8080)│
-                │ React build + /api   │ proxy  │ contact, releases,   │
-                └──────────────────────┘        │ health               │
-                                                └──────────┬───────────┘
-                                                           ▼
-                                                    /data/contact-requests.jsonl
+  browser ──► traefik :443 ──► binchitects (nginx)  ──► static studio page
+     │            │
+     │            └──────────► web (nginx) ──────────► api (.NET 10)
+     │                           │  /api proxy          │
+     │                           └──────────────────────┘
+     │                                                     ▼
+     └── :80 redirects to :443                    /data/contact-requests.jsonl
 ```
 
 The sites are designed to run the way the product does: on your own hardware.
@@ -43,16 +41,18 @@ built, the stack runs on an air-gapped network.
 
 ```bash
 cp .env.example .env
-docker compose up -d --build
+# put the certificate and key at the paths named in .env
+docker compose up -d --build      # or `docker compose up --build` to watch it
 ```
 
-Open <http://127.0.0.1:8080> for Argus and <http://127.0.0.1:8100> for the
-studio (set `HTTP_PORT` / `BINCHIECTS_HTTP_PORT` in `.env` if those ports are
-taken). Both are bound to loopback by default; put a TLS terminator in front for
-a public deployment (see below).
+Traefik serves both domains over the TLS certificate you supply. Open
+<https://argus.binchitects.com> and <https://binchitects.com>. For a local trial
+with a self-signed certificate on `.localhost`, see the short recipe in
+[`docs/DEPLOYMENT.md`](docs/DEPLOYMENT.md#4-a-local-trial).
 
 ```bash
-docker compose logs -f          # follow all three
+docker compose logs -f edge     # the edge
+docker compose logs -f          # all four containers
 docker compose down             # stop
 docker compose down -v          # stop and remove the contact-request volume
 ```
@@ -81,28 +81,34 @@ gives it a page: [binchitects.com](https://binchitects.com).
 ## Production: both domains
 
 1. **DNS** — `A` (and `AAAA`, if you have it) records for
-   `argus.binchitects.com`, `binchitects.com` and `www.binchitects.com` pointing
-   at the host. Ports 80 and 443 reachable.
-2. **Environment** — copy `.env.example` to `.env`, set at least:
+   `argus.binchitects.com` and `binchitects.com` pointing at the host. Ports 80
+   and 443 reachable.
+2. **Certificate** — one certificate and key covering both names as SANs, at
+   `deploy/tls/fullchain.pem` and `deploy/tls/privkey.pem` (or point
+   `TLS_CERT_FILE` / `TLS_KEY_FILE` elsewhere).
+3. **Environment** — copy `.env.example` to `.env` and set:
 
    ```dotenv
-   SITE_DOMAIN=argus.binchitects.com
+   ARGUS_DOMAIN=argus.binchitects.com
    BINCHIECTS_DOMAIN=binchitects.com
+   TLS_CERT_FILE=./deploy/tls/fullchain.pem
+   TLS_KEY_FILE=./deploy/tls/privkey.pem
    IP_HASH_SALT=<openssl rand -hex 32>
    ADMIN_TOKEN=<openssl rand -hex 32>          # optional, enables the CSV export
    ```
 
-3. **Up** with the TLS edge:
+4. **Up**:
 
    ```bash
-   docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d --build
+   docker compose up -d --build
    ```
 
-   Caddy obtains and renews a certificate for each name and forwards it to the
-   right image; `www.binchitects.com` redirects to the apex. The web ports stay
-   on loopback; only 80/443 are public.
-   See [`docs/DEPLOYMENT.md`](docs/DEPLOYMENT.md) for an existing reverse proxy,
-   certificates of your own, backups and hardening.
+   Traefik terminates TLS with that certificate for both hostnames, routes each
+   to its image, and redirects HTTP to HTTPS. The API is never published; only
+   80/443 are. Certificate renewal is yours: replace the files and
+   `docker compose restart edge`.
+   See [`docs/DEPLOYMENT.md`](docs/DEPLOYMENT.md) for the certificate check,
+   local trial, backups and hardening.
 
 ## Local development
 
@@ -142,17 +148,31 @@ make smoke                      # all three smoke scripts, after `docker compose
 ```
 
 The smoke scripts use `curl` only and can be pointed anywhere with `BASE_URL`.
+For the local self-signed stack, add `CURL_OPTS=-k`:
+
+```bash
+CURL_OPTS=-k make smoke
+```
+
+Or point one script at the edge directly:
+
+```bash
+BASE_URL=https://argus.localhost:9443 \
+CURL_OPTS="-k --resolve argus.localhost:9443:127.0.0.1" \
+  tests/smoke/web.sh
+```
 
 ## Configuration
 
 | Variable | Default | What it does |
 |---|---|---|
-| `SITE_DOMAIN` | `argus.binchitects.com` | Argus domain Caddy gets a certificate for |
-| `BINCHIECTS_DOMAIN` | `binchitects.com` | Studio domain Caddy gets a certificate for |
-| `HTTP_BIND` | `127.0.0.1` | Address the Argus web port is published on |
-| `HTTP_PORT` | `8080` | Published Argus web port |
-| `BINCHIECTS_HTTP_BIND` | `127.0.0.1` | Address the studio web port is published on |
-| `BINCHIECTS_HTTP_PORT` | `8100` | Published studio web port |
+| `ARGUS_DOMAIN` | `argus.binchitects.com` | Host Traefik routes to Argus |
+| `BINCHIECTS_DOMAIN` | `binchitects.com` | Host Traefik routes to the studio |
+| `TLS_CERT_FILE` | `./deploy/tls/fullchain.pem` | Certificate covering both names |
+| `TLS_KEY_FILE` | `./deploy/tls/privkey.pem` | Its private key |
+| `HTTP_PORT` | `80` | Traefik HTTP entrypoint on the host |
+| `HTTPS_PORT` | `443` | Traefik HTTPS entrypoint on the host |
+| `DOCKER_SOCKET` | `/var/run/docker.sock` | Rootless Docker uses a user socket |
 | `IP_HASH_SALT` | empty | Salt for the stored hash of a request's address |
 | `ADMIN_TOKEN` | empty | Enables `GET /api/admin/leads`; empty = disabled (404) |
 | `CONTACT_WEBHOOK_URL` | empty | Optional Slack/Teams/CRM webhook for each enquiry |
@@ -212,10 +232,10 @@ src/
     public/            favicon, app icons, social card, sitemap, robots
     Dockerfile, nginx.conf
 tests/smoke/           curl checks for all three services
-deploy/caddy/          Caddyfile for both domains and automatic TLS
-docker-compose.yml     the three images
-docker-compose.prod.yml adds the TLS edge
-docs/DEPLOYMENT.md     DNS, TLS, backups, updates, hardening
+deploy/traefik/        the shared TLS certificate configuration
+deploy/tls/            your certificate and key (gitignored)
+docker-compose.yml     Traefik, both sites and the API
+docs/DEPLOYMENT.md     DNS, TLS, local trial, backups, updates, hardening
 ```
 
 ## Design

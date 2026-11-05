@@ -61,16 +61,32 @@ jobs:
     needs: [web, binchitects, api]
     steps:
       - uses: actions/checkout@v4
-      - name: Build and start the stack
-        run: docker compose up -d --build --wait
-        env:
-          ADMIN_TOKEN: ci-token
-          IP_HASH_SALT: ci-salt
-      - name: Smoke the site and the API
+      - name: Make a self-signed certificate and a local .env
         run: |
-          BASE_URL=http://127.0.0.1:8080 tests/smoke/web.sh
-          BASE_URL=http://127.0.0.1:8080 ADMIN_TOKEN=ci-token SKIP_RATE_LIMIT=1 tests/smoke/api.sh
-          BASE_URL=http://127.0.0.1:8100 tests/smoke/binchitects.sh
+          mkdir -p deploy/tls
+          openssl req -x509 -nodes -newkey rsa:2048 -days 1 \
+            -keyout deploy/tls/privkey.pem -out deploy/tls/fullchain.pem \
+            -subj "/CN=binchitects.com" \
+            -addext "subjectAltName=DNS:argus.binchitects.com,DNS:binchitects.com"
+          sudo sh -c 'printf "\n127.0.0.1 argus.binchitects.com binchitects.com\n" >> /etc/hosts'
+          cat > .env <<'ENV'
+          ARGUS_DOMAIN=argus.binchitects.com
+          BINCHIECTS_DOMAIN=binchitects.com
+          TLS_CERT_FILE=./deploy/tls/fullchain.pem
+          TLS_KEY_FILE=./deploy/tls/privkey.pem
+          HTTP_PORT=80
+          HTTPS_PORT=443
+          IP_HASH_SALT=ci-salt
+          ADMIN_TOKEN=ci-token
+          ENV
+      - name: Build and start the stack
+        run: docker compose up -d --build --wait --wait-timeout 180
+      - name: Smoke both sites and the API through Traefik
+        run: |
+          BASE_URL=https://argus.binchitects.com CURL_OPTS="-k" tests/smoke/web.sh
+          BASE_URL=https://argus.binchitects.com CURL_OPTS="-k" \
+            ADMIN_TOKEN=ci-token SKIP_RATE_LIMIT=1 tests/smoke/api.sh
+          BASE_URL=https://binchitects.com CURL_OPTS="-k" tests/smoke/binchitects.sh
       - name: Logs on failure
         if: failure()
         run: docker compose logs
