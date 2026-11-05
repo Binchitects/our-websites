@@ -4,8 +4,8 @@ import { ArticleOpener } from '@/components/ui/ArticleOpener'
 import { Chapter } from '@/components/ui/Chapter'
 import { CtaBand } from '@/components/ui/CtaBand'
 import { SITE } from '@/lib/content'
-import { routeMeta } from '@/lib/route-meta'
-import { useSeo } from '@/lib/seo'
+import { usePageSeo } from '@/lib/seo'
+import { useLang } from '@/lib/i18n'
 
 type Release = {
   tag: string
@@ -22,20 +22,30 @@ type Feed = {
   releases: Release[]
 }
 
-const formatter = new Intl.DateTimeFormat('en-GB', {
+const formatterEn = new Intl.DateTimeFormat('en-GB', {
   day: '2-digit',
   month: 'short',
   year: 'numeric',
 })
+const formatterFa = new Intl.DateTimeFormat('fa-IR', {
+  day: 'numeric',
+  month: 'long',
+  year: 'numeric',
+})
 
-function formatDate(value: string | null): string {
-  if (!value) return 'Unreleased'
+function formatDate(value: string | null, fa: boolean): string {
+  if (!value) return fa ? 'منتشرنشده' : 'Unreleased'
   const date = new Date(value)
-  return Number.isNaN(date.getTime()) ? 'Unreleased' : formatter.format(date)
+  return Number.isNaN(date.getTime())
+    ? fa
+      ? 'منتشرنشده'
+      : 'Unreleased'
+    : (fa ? formatterFa : formatterEn).format(date)
 }
 
 export function Changelog() {
-  useSeo({ ...routeMeta('/changelog'), path: '/changelog' })
+  usePageSeo('/changelog')
+  const fa = useLang() === 'fa'
 
   const [feed, setFeed] = useState<Feed | null>(null)
   const [error, setError] = useState(false)
@@ -64,39 +74,43 @@ export function Changelog() {
   return (
     <>
       <ArticleOpener
-        section="Changelog"
+        section={fa ? 'تغییرات' : 'Changelog'}
         title={
           <>
-            What changed,
+            {fa ? 'چه چیزی عوض شد،' : 'What changed,'}
             <br />
-            <em>and why.</em>
+            <em>{fa ? 'و چرا.' : 'and why.'}</em>
           </>
         }
-        standfirst="Every release carries what it added, what it fixed and — when one is weakened — which compliance control it changes. The page reads the repository’s releases through this site’s own API."
+        standfirst={
+          fa
+            ? 'هر انتشار می‌گوید چه چیزی اضافه و چه چیزی اصلاح شد و — اگر کنترلی ضعیف شده — کدام کنترل انطباق تغییر می‌کند. این صفحه انتشارهای مخزن را از API همین سایت می‌خواند. متن یادداشت‌های انتشار به زبان اصلی (انگلیسی) است.'
+            : 'Every release carries what it added, what it fixed and — when one is weakened — which compliance control it changes. The page reads the repository’s releases through this site’s own API.'
+        }
         actions={[
-          { label: 'All releases', href: SITE.releases, external: true, solid: true },
-          { label: 'Full changelog', href: SITE.changelog, external: true },
+          { label: fa ? 'همهٔ انتشارها' : 'All releases', href: SITE.releases, external: true, solid: true },
+          { label: fa ? 'تغییرات کامل' : 'Full changelog', href: SITE.changelog, external: true },
         ]}
         aside={
           <>
-            <p className="micro micro-ink">What a release says</p>
+            <p className="micro micro-ink">{fa ? 'یک انتشار چه می‌گوید' : 'What a release says'}</p>
             <ul className="mini-list" style={{ marginTop: '10px' }}>
               <li>
                 <span>
-                  <strong className="mono" style={{ fontSize: '10px' }}>Highlights</strong> — the one or
-                  two things worth reading.
+                  <strong className="mono" style={{ fontSize: '10px' }}>{fa ? 'نکات برجسته' : 'Highlights'}</strong>
+                  {fa ? ' — یکی دو چیز ارزش خواندن.' : ' — the one or two things worth reading.'}
                 </span>
               </li>
               <li>
                 <span>
-                  <strong className="mono" style={{ fontSize: '10px' }}>Features and bugs</strong> — what
-                  is new and what is fixed.
+                  <strong className="mono" style={{ fontSize: '10px' }}>{fa ? 'قابلیت‌ها و باگ‌ها' : 'Features and bugs'}</strong>
+                  {fa ? ' — چه چیزی تازه و چه چیزی اصلاح شده.' : ' — what is new and what is fixed.'}
                 </span>
               </li>
               <li>
                 <span>
-                  <strong className="mono" style={{ fontSize: '10px' }}>Weakened controls</strong> — every
-                  control a release makes weaker, by id, and why.
+                  <strong className="mono" style={{ fontSize: '10px' }}>{fa ? 'کنترل‌های تضعیف‌شده' : 'Weakened controls'}</strong>
+                  {fa ? ' — هر کنترلی که انتشار ضعیف‌ترش می‌کند، با شناسه و دلیل.' : ' — every control a release makes weaker, by id, and why.'}
                 </span>
               </li>
             </ul>
@@ -104,13 +118,14 @@ export function Changelog() {
         }
       />
 
-      <Chapter number="01" label="The record">
+      <Chapter number="01" label={fa ? 'دفتر' : 'The record'}>
         {error ? (
           <div className="note">
-            <h2 className="serif-m">The changelog could not be read.</h2>
+            <h2 className="serif-m">{fa ? 'تغییرات خوانده نشد.' : 'The changelog could not be read.'}</h2>
             <p className="body mt-s">
-              The site API did not answer. Releases are always available in the repository, and the
-              page will try again.
+              {fa
+                ? 'API سایت پاسخ نداد. انتشارها همیشه در مخزن موجودند و این صفحه دوباره تلاش می‌کند.'
+                : 'The site API did not answer. Releases are always available in the repository, and the page will try again.'}
             </p>
             <div className="row mt-m">
               <button
@@ -119,7 +134,7 @@ export function Changelog() {
                 className="btn btn-outline btn-sm"
               >
                 <RefreshCw size={12} aria-hidden />
-                Try again
+                {fa ? 'دوباره تلاش کنید' : 'Try again'}
               </button>
               <a
                 href={SITE.releases}
@@ -127,13 +142,13 @@ export function Changelog() {
                 rel="noreferrer noopener"
                 className="btn btn-solid btn-sm"
               >
-                Releases on GitHub
+                {fa ? 'انتشارها در GitHub' : 'Releases on GitHub'}
                 <ArrowUpRight size={12} aria-hidden />
               </a>
             </div>
           </div>
         ) : !feed ? (
-          <div aria-busy="true" aria-label="Loading releases">
+          <div aria-busy="true" aria-label={fa ? 'در حال بارگذاری انتشارها' : 'Loading releases'}>
             {[0, 1, 2, 3].map((index) => (
               <div key={index} className="release">
                 <div>
@@ -150,22 +165,30 @@ export function Changelog() {
         ) : (
           <>
             <div className="subhead">
-              <h3>{feed.releases.length} releases, newest first</h3>
+              <h3>
+                {fa
+                  ? `${feed.releases.length} انتشار، جدیدترین اول`
+                  : `${feed.releases.length} releases, newest first`}
+              </h3>
               <span className="micro">
                 {feed.source === 'github'
-                  ? 'Read from GitHub · cached ten minutes'
-                  : 'GitHub was out of reach · built-in list'}
+                  ? fa
+                    ? 'خوانده‌شده از GitHub · کش ده‌دقیقه‌ای'
+                    : 'Read from GitHub · cached ten minutes'
+                  : fa
+                    ? 'GitHub در دسترس نبود · فهرست داخلی'
+                    : 'GitHub was out of reach · built-in list'}
               </span>
             </div>
 
             {feed.releases.map((release) => (
               <article key={release.tag} className="release">
                 <div>
-                  <span className="release-date">{formatDate(release.publishedAt)}</span>
+                  <span className="release-date">{formatDate(release.publishedAt, fa)}</span>
                   <span className="release-tag">{release.tag}</span>
                   {release.prerelease && (
-                    <span className="release-tag" style={{ marginLeft: '6px' }}>
-                      pre-release
+                    <span className="release-tag" style={{ marginInlineStart: '6px' }}>
+                      {fa ? 'پیش‌انتشار' : 'pre-release'}
                     </span>
                   )}
                 </div>
@@ -178,7 +201,7 @@ export function Changelog() {
                     rel="noreferrer noopener"
                     className="arrow-link"
                   >
-                    Release notes
+                    {fa ? 'یادداشت‌های انتشار' : 'Release notes'}
                     <ArrowUpRight size={11} aria-hidden />
                   </a>
                 </div>
@@ -190,11 +213,21 @@ export function Changelog() {
 
       <CtaBand
         title={
-          <>
-            Run the version <em>you can read.</em>
-          </>
+          fa ? (
+            <>
+              نسخه‌ای را اجرا کنید <em>که می‌توانید بخوانید.</em>
+            </>
+          ) : (
+            <>
+              Run the version <em>you can read.</em>
+            </>
+          )
         }
-        lead="Every release is source, notes and a tag. Take the build, or ask us to map an upgrade path for the version you already run."
+        lead={
+          fa
+            ? 'هر انتشار کد منبع، یادداشت و یک تگ است. build را بردارید یا از ما بخواهید مسیر ارتقا از نسخهٔ فعلی‌تان را نقشه کند.'
+            : 'Every release is source, notes and a tag. Take the build, or ask us to map an upgrade path for the version you already run.'
+        }
       />
     </>
   )

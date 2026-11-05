@@ -1,47 +1,83 @@
 [
   {
     "path": "/",
-    "title": "ARGUS \u2014 your team\u2019s private AI, on your hardware",
-    "description": "Argus Arena is the self-hosted AI platform: chat, Code Arena, a code index, studio, meetings, agents and compliance evidence, on your GPUs inside your network."
+    "title": "ARGUS — your team’s private AI, on your hardware",
+    "description": "Argus Arena is the self-hosted AI platform: chat, Code Arena, a code index, studio, meetings, agents and compliance evidence, on your GPUs inside your network.",
+    "fa": {
+      "title": "ARGUS — هوش مصنوعی خصوصی تیم شما، روی سخت‌افزار خودتان",
+      "description": "Argus Arena پلتفرم هوش مصنوعی خودمیزبان است: چت، Code Arena، نمایهٔ کد، استودیو، جلسه‌ها، عامل‌ها و شواهد انطباق، روی GPUهای خودتان و داخل شبکهٔ خودتان."
+    }
   },
   {
     "path": "/platform",
-    "title": "Platform \u2014 one self-hosted AI stack for the whole team | ARGUS",
-    "description": "The chat, Code Arena, the Argus code index, studio, meetings, agents, security reviews and GRC, on your own GPUs with one sign-in and one budget for each person."
+    "title": "Platform — one self-hosted AI stack for the whole team | ARGUS",
+    "description": "The chat, Code Arena, the Argus code index, studio, meetings, agents, security reviews and GRC, on your own GPUs with one sign-in and one budget for each person.",
+    "fa": {
+      "title": "پلتفرم — یک استک هوش مصنوعی خودمیزبان برای کل تیم | ARGUS",
+      "description": "چت، Code Arena، نمایهٔ کد Argus، استودیو، جلسه‌ها، عامل‌ها، بازبینی امنیتی و GRC، روی GPUهای خودتان با یک ورود و یک بودجه برای هر فرد."
+    }
   },
   {
     "path": "/code-arena",
-    "title": "Code Arena \u2014 a coding agent with its own IDE, self-hosted | ARGUS",
-    "description": "Code Arena is our own coding agent with a full IDE in the browser: editor, search, git, terminals, a debugger and a code index. One file, offline, kept current by your Arena."
+    "title": "Code Arena — a coding agent with its own IDE, self-hosted | ARGUS",
+    "description": "Code Arena is our own coding agent with a full IDE in the browser: editor, search, git, terminals, a debugger and a code index. One file, offline, kept current by your Arena.",
+    "fa": {
+      "title": "Code Arena — عامل کدنویسی با IDE اختصاصی، خودمیزبان | ARGUS",
+      "description": "Code Arena عامل کدنویسی ما با یک IDE کامل در مرورگر است: ویرایشگر، جست‌وجو، git، ترمینال، دیباگر و نمایهٔ کد. یک فایل، آفلاین و به‌روز نگه‌داشته‌شده توسط Arena شما."
+    }
   },
   {
     "path": "/argus",
-    "title": "Argus \u2014 the code index that answers with the line | ARGUS",
-    "description": "Argus mirrors your GitLab and answers over MCP: symbols, references, merge requests, issues, wikis and documentation packs, with each person seeing only what their own GitLab account can read."
+    "title": "Argus — the code index that answers with the line | ARGUS",
+    "description": "Argus mirrors your GitLab and answers over MCP: symbols, references, merge requests, issues, wikis and documentation packs, with each person seeing only what their own GitLab account can read.",
+    "fa": {
+      "title": "Argus — نمایهٔ کدی که با خط پاسخ می‌دهد | ARGUS",
+      "description": "Argus مخزن GitLab شما را آینه می‌کند و روی MCP پاسخ می‌دهد: نمادها، ارجاع‌ها، merge requestها، ایشوها، ویکی‌ها و بسته‌های مستندات، به‌گونه‌ای که هر فرد فقط آنچه حساب GitLab خودش می‌تواند بخواند را ببیند."
+    }
   },
   {
     "path": "/security",
-    "title": "Security and compliance \u2014 evidence you can hand over | ARGUS",
-    "description": "SSO, LDAP and 2FA, per-person rights enforced in SQL, network allow lists, a tamper-evident audit log and fourteen compliance frameworks mapped clause by clause with live control checks."
+    "title": "Security and compliance — evidence you can hand over | ARGUS",
+    "description": "SSO, LDAP and 2FA, per-person rights enforced in SQL, network allow lists, a tamper-evident audit log and fourteen compliance frameworks mapped clause by clause with live control checks.",
+    "fa": {
+      "title": "امنیت و انطباق — شواهدی که می‌توانید تحویل دهید | ARGUS",
+      "description": "SSO، LDAP و ۲FA، اختیارات فردی اعمال‌شده در SQL، فهرست‌های مجاز شبکه، گزارش ممیزی مقاوم در برابر دستکاری و چهارده چارچوب انطباق بند‌به‌بند با بررسی زندهٔ کنترل‌ها."
+    }
   },
   {
     "path": "/changelog",
-    "title": "Changelog \u2014 what changed in ARGUS",
-    "description": "Release notes for Argus Arena, Code Arena and Argus, read from the project\u2019s GitHub releases and kept on this page."
+    "title": "Changelog — what changed in ARGUS",
+    "description": "Release notes for Argus Arena, Code Arena and Argus, read from the project’s GitHub releases and kept on this page.",
+    "fa": {
+      "title": "تغییرات — چه چیزی در ARGUS عوض شد",
+      "description": "یادداشت‌های انتشار Argus Arena، Code Arena و Argus، خوانده‌شده از انتشارهای GitHub پروژه و نگه‌داشته‌شده در این صفحه."
+    }
   },
   {
     "path": "/contact",
-    "title": "Talk to us \u2014 ARGUS",
-    "description": "Ask about a self-hosted ARGUS deployment, a commercial licence, a security review or a walkthrough of Argus Arena and Code Arena."
+    "title": "Talk to us — ARGUS",
+    "description": "Ask about a self-hosted ARGUS deployment, a commercial licence, a security review or a walkthrough of Argus Arena and Code Arena.",
+    "fa": {
+      "title": "با ما حرف بزنید — ARGUS",
+      "description": "دربارهٔ استقرار خودمیزبان ARGUS، مجوز تجاری، بازبینی امنیتی یا یک معرفی کامل از Argus Arena و Code Arena بپرسید."
+    }
   },
   {
     "path": "/privacy",
-    "title": "Privacy \u2014 how this site handles your message | ARGUS",
-    "description": "What this site collects when you use the contact form, why, how long it is kept, and how to have it removed. No analytics, no advertising cookies, no third-party fonts."
+    "title": "Privacy — how this site handles your message | ARGUS",
+    "description": "What this site collects when you use the contact form, why, how long it is kept, and how to have it removed. No analytics, no advertising cookies, no third-party fonts.",
+    "fa": {
+      "title": "حریم خصوصی — این سایت با پیام شما چه می‌کند | ARGUS",
+      "description": "این سایت هنگام استفاده از فرم تماس چه چیزی جمع می‌کند، چرا، چه مدت نگه می‌دارد و چگونه حذفش کنیم. بدون تحلیل‌گر، بدون کوکی تبلیغاتی، بدون فونت شخص ثالث."
+    }
   },
   {
     "path": "/brand",
-    "title": "Brand \u2014 the mark, the seal and the type | ARGUS",
-    "description": "The ARGUS identity: a spectrum-ticked roundel, an engraved seal, Archivo and IBM Plex, a six-band spectrum and the vector files to download."
+    "title": "Brand — the mark, the seal and the type | ARGUS",
+    "description": "The ARGUS identity: a spectrum-ticked roundel, an engraved seal, Archivo and IBM Plex, a six-band spectrum and the vector files to download.",
+    "fa": {
+      "title": "برند — نشان، مهر و تایپوگرافی | ARGUS",
+      "description": "هویت ARGUS: یک نشان گرد با تیک‌های طیف، یک مهر حکاکی‌شده، Archivo و IBM Plex، یک طیف شش‌باندی و فایل‌های وکتور برای دانلود."
+    }
   }
 ]

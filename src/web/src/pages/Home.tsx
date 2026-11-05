@@ -10,11 +10,10 @@ import { QuestionsChapter } from '@/components/home/QuestionsChapter'
 import { StackChapter } from '@/components/home/StackChapter'
 import { Toc } from '@/components/home/Toc'
 import { CtaBand } from '@/components/ui/CtaBand'
-import { useSeo } from '@/lib/seo'
-import { routeMeta } from '@/lib/route-meta'
+import { usePageSeo } from '@/lib/seo'
 
 export function Home() {
-  useSeo({ ...routeMeta('/'), path: '/' })
+  usePageSeo('/')
 
   return (
     <>

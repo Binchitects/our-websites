@@ -5,8 +5,8 @@ import { CtaBand } from '@/components/ui/CtaBand'
 import { IndexList } from '@/components/ui/IndexList'
 import { Plate } from '@/components/ui/Plate'
 import { ARGUS_EVIDENCE, SITE } from '@/lib/content'
-import { routeMeta } from '@/lib/route-meta'
-import { useSeo } from '@/lib/seo'
+import { usePageSeo } from '@/lib/seo'
+import { useLang } from '@/lib/i18n'
 
 const serves = [
   {
@@ -100,24 +100,54 @@ const keptCurrent = [
   },
 ]
 
+
+const servesFa = [
+  { title: 'کد شما', desc: 'نمادها، ارجاع‌ها، محتوای فایل‌ها و گرافِ استفادهٔ هر مخزن از مخزن‌های دیگر: بسته‌ها، importها، #includeها، ساب‌ماژول‌ها، includeهای CI و ایمیج‌ها.', tag: 'Code' },
+  { title: 'بسته‌های مستندات', desc: 'آرشیوهای خودکفای منابع عمومی: Windows SDK و WDK، MSVC C++، cppreference، Qt 4 تا 6، .NET، Python، PowerShell، ابزارهای shell، الگوریتم‌ها و طراحی سیستم.', tag: 'Docs' },
+  { title: 'Merge requestها و کد در هر کامیت', desc: 'دیف‌ها، کامیت‌ها، بحث‌ها، وضعیت پایپ‌لاین، لاگ jobها و فایل‌ها در هر ref — فقط‌خواندنی، برای هر پروژه‌ای که کاربر عضو آن است، نمایه‌شده یا نشده.', tag: 'GitLab' },
+  { title: 'ایشوها و ویکی', desc: 'چیزی که مردم دربارهٔ کسب‌وکار پرسیده، گزارش کرده و نوشته‌اند، با همان دسترسی فقط‌خواندنی و همان بررسی فردی که بقیهٔ چیزها دارند.', tag: 'GitLab' },
+]
+
+const accessFa = [
+  ['بپرس', 'یک عامل با هویت خودِ فرد ابزاری را صدا می‌زند.'],
+  ['بررسی کن', 'Argus مخزن‌ها، ایشوها و ویکی‌ها را در SQL به آنچه فرد می‌تواند بخواند محدود می‌کند.'],
+  ['کپی کن', 'منبع با فایل و خط برمی‌گردد، نه خلاصه‌ای از آن.'],
+  ['ارجاع بده', 'عامل از آنچه به او داده شده پاسخ می‌دهد و می‌گوید از کجا آمده.'],
+]
+
+const keptCurrentFa = [
+  { title: 'آینه می‌کند، نمی‌نویسد', desc: 'یک توکن فقط‌خواندنی GitLab و یک آینهٔ به‌روز. Argus هرگز در مخزن‌های شما نمی‌نویسد و توکن کار دیگری نمی‌تواند بکند.' },
+  { title: 'بیش از یک شاخه', desc: 'شاخه‌هایی را که مهم‌اند نمایه کنید و کد را در هر کامیت با file_at، grep_at و compare_refs بخوانید.' },
+  { title: 'امبدینگ هرجا که بخواهید', desc: 'nomic-embed-text-v1.5 روی CPU از طریق llama.cpp، یا بک‌اند اختیاری Postgres و pgvector برای مقیاس.' },
+  { title: 'پشتیبان‌هایی که بازمی‌گردند', desc: 'اینکه چه چیزی ارزش نگه داشتن دارد و چطور برگردانده شود، نوشته شده — همراه با نمایه‌ها، تا بازسازی نقشه نباشد.' },
+]
+
 export function ArgusPage() {
-  useSeo({ ...routeMeta('/argus'), path: '/argus' })
+  usePageSeo('/argus')
+  const fa = useLang() === 'fa'
+  const served = fa ? servesFa : serves
+  const steps = fa ? accessFa : access
+  const kept = fa ? keptCurrentFa : keptCurrent
 
   return (
     <>
       <ArticleOpener
-        section="Argus, the code index"
+        section={fa ? 'Argus، نمایهٔ کد' : 'Argus, the code index'}
         title={
           <>
-            The index that answers
+            {fa ? 'نمایه‌ای که پاسخ می‌دهد' : 'The index that answers'}
             <br />
-            <em>with the line.</em>
+            <em>{fa ? 'با خط.' : 'with the line.'}</em>
           </>
         }
-        standfirst="Argus mirrors your repositories and serves them over MCP: symbols, references, merge requests, CI logs, issues, wikis and documentation packs. The model is handed the facts, verbatim, scoped to the person asking."
+        standfirst={
+          fa
+            ? 'Argus مخزن‌های شما را آینه می‌کند و روی MCP سرو می‌کند: نمادها، ارجاع‌ها، merge requestها، لاگ‌های CI، ایشوها، ویکی‌ها و بسته‌های مستندات. واقعیت‌ها عیناً به مدل داده می‌شوند، در محدودهٔ اختیارات پرسشگر.'
+            : 'Argus mirrors your repositories and serves them over MCP: symbols, references, merge requests, CI logs, issues, wikis and documentation packs. The model is handed the facts, verbatim, scoped to the person asking.'
+        }
         actions={[
-          { label: 'Read the manual', href: SITE.argusDocs, external: true, solid: true },
-          { label: 'See the tools', href: '#tools' },
+          { label: fa ? 'راهنما را بخوانید' : 'Read the manual', href: SITE.argusDocs, external: true, solid: true },
+          { label: fa ? 'ابزارها را ببینید' : 'See the tools', href: '#tools' },
         ]}
         aside={
           <>
@@ -125,29 +155,39 @@ export function ArgusPage() {
               {ARGUS_EVIDENCE.map((item) => (
                 <div key={item.label}>
                   <p className="evidence-value">{item.value}</p>
-                  <p className="evidence-label">{item.label}</p>
+                  <p className="evidence-label">{fa ? item.labelFa : item.label}</p>
                 </div>
               ))}
             </div>
             <p className="note" style={{ borderTop: 0, marginTop: '10px' }}>
-              Measured by Argus itself, across five driver files and eighteen contract claims.
+              {fa
+                ? 'سنجیده‌شده توسط خود Argus، روی پنج فایل درایور و هجده ادعای قراردادی.'
+                : 'Measured by Argus itself, across five driver files and eighteen contract claims.'}
             </p>
           </>
         }
       />
 
-      <Chapter number="01" label="What it serves">
+      <Chapter number="01" label={fa ? 'چه چیزی سرو می‌کند' : 'What it serves'}>
         <ChapterHead
-          title="Four kinds of facts a model gets wrong on its own."
-          standfirst="Thirty-four tools, one per question you would otherwise ask a model to remember. Each answer quotes the source, and each result carries its own licence and attribution where the material requires it."
+          title={fa ? 'چهار نوع واقعیت که مدل به‌تنهایی اشتباه می‌گوید.' : 'Four kinds of facts a model gets wrong on its own.'}
+          standfirst={
+            fa
+              ? 'سی‌وچهار ابزار، یکی برای هر پرسشی که وگرنه از مدل می‌خواهید به‌خاطر بسپارد. هر پاسخ منبع را نقل می‌کند و هر نتیجه در صورت نیاز مجوز و ارجاع خودش را دارد.'
+              : 'Thirty-four tools, one per question you would otherwise ask a model to remember. Each answer quotes the source, and each result carries its own licence and attribution where the material requires it.'
+          }
         />
-        <IndexList items={serves} />
+        <IndexList items={served} />
       </Chapter>
 
-      <Chapter number="02" label="The tools" id="tools">
+      <Chapter number="02" label={fa ? 'ابزارها' : 'The tools'} id="tools">
         <ChapterHead
-          title="An agent with the whole repository, not a prompt of it."
-          standfirst="The names are the contract: an agent asks for a symbol, a reference, a diff or a page, and gets the source back. Nothing in the answer is recalled from training."
+          title={fa ? 'عاملی با کل مخزن، نه promptی از آن.' : 'An agent with the whole repository, not a prompt of it.'}
+          standfirst={
+            fa
+              ? 'نام‌ها همان قراردادند: عامل یک نماد، یک ارجاع، یک دیف یا یک صفحه می‌خواهد و منبع را پس می‌گیرد. هیچ‌چیز در پاسخ از آموزش به‌یاد آورده نمی‌شود.'
+              : 'The names are the contract: an agent asks for a symbol, a reference, a diff or a page, and gets the source back. Nothing in the answer is recalled from training.'
+          }
         />
 
         <div className="catalog">
@@ -167,30 +207,35 @@ export function ArgusPage() {
         </div>
       </Chapter>
 
-      <Chapter number="03" label="Access">
+      <Chapter number="03" label={fa ? 'دسترسی' : 'Access'}>
         <ChapterHead
-          title="Each person sees exactly what their GitLab allows."
-          standfirst="The check is a predicate in SQL on every query, not a sentence in a prompt. A developer who cannot open a repository in GitLab cannot retrieve it through Argus — and the audit log records the call either way."
+          title={fa ? 'هر فرد دقیقاً همان چیزی را می‌بیند که GitLabش اجازه می‌دهد.' : 'Each person sees exactly what their GitLab allows.'}
+          standfirst={
+            fa
+              ? 'بررسی یک predicate در SQL روی هر پرسش است، نه یک جمله در prompt. توسعه‌دهنده‌ای که نمی‌تواند مخزنی را در GitLab باز کند، از Argus هم نمی‌تواند بگیردش — و گزارش ممیزی در هر حال فراخوانی را ثبت می‌کند.'
+              : 'The check is a predicate in SQL on every query, not a sentence in a prompt. A developer who cannot open a repository in GitLab cannot retrieve it through Argus — and the audit log records the call either way.'
+          }
         />
 
         <div className="spread spread-start">
           <div>
             <p className="body">
-              The read-only token is Argus’s own; each answer is filtered again for the caller. Wiki
-              and issue reads use the same check as code, so nothing leaks sideways. A private CA
-              can secure the hop, and Code Arena’s builds are signed by it.
+              {fa
+                ? 'توکن فقط‌خواندنی از آنِ خود Argus است؛ هر پاسخ دوباره برای پرسشگر فیلتر می‌شود. خواندن ویکی و ایشو همان بررسی کد را دارد، پس چیزی از پهلو درز نمی‌کند. یک CA خصوصی می‌تواند مسیر را امن کند و buildهای Code Arena با آن امضا می‌شوند.'
+                : 'The read-only token is Argus’s own; each answer is filtered again for the caller. Wiki and issue reads use the same check as code, so nothing leaks sideways. A private CA can secure the hop, and Code Arena’s builds are signed by it.'}
             </p>
             <figure className="quote mt-m">
               <blockquote>
-                Argus Panoptes had a hundred eyes. Yours should not need more than one GitLab account
-                to know what it is allowed to see.
+                {fa
+                  ? 'Argus Panoptes صد چشم داشت. چشم شما نباید بیش از یک حساب GitLab بخواهد تا بداند چه چیزی را مجاز است ببیند.'
+                  : 'Argus Panoptes had a hundred eyes. Yours should not need more than one GitLab account to know what it is allowed to see.'}
               </blockquote>
-              <figcaption>— The design of the index</figcaption>
+              <figcaption>{fa ? '— طراحی نمایه' : '— The design of the index'}</figcaption>
             </figure>
           </div>
 
           <div className="runbook">
-            {access.map(([title, body], index) => (
+            {steps.map(([title, body], index) => (
               <div key={title} className="runbook-step">
                 <span className="runbook-num">{String(index + 1).padStart(2, '0')}</span>
                 <div>
@@ -204,44 +249,58 @@ export function ArgusPage() {
 
         <div className="mt-l">
           <Plate
-            figure="FIG. 06"
-            caption="The same question through the index: the calls, the quoted line, and the caller's own rights. Nothing is answered from memory."
+            figure={fa ? 'شکل ۰۶' : 'FIG. 06'}
+            caption={
+              fa
+                ? 'همان پرسش از مسیر نمایه: فراخوانی‌ها، خط نقل‌شده و اختیارات خود پرسشگر. هیچ‌چیز از حافظه پاسخ داده نمی‌شود.'
+                : 'The same question through the index: the calls, the quoted line, and the caller’s own rights. Nothing is answered from memory.'
+            }
           >
             <RetrievalPlate />
           </Plate>
         </div>
       </Chapter>
 
-      <Chapter number="04" label="Kept current">
+      <Chapter number="04" label={fa ? 'به‌روز نگه‌داشته‌شده' : 'Kept current'}>
         <ChapterHead
-          title="An index that goes stale is worse than none."
-          standfirst="Argus is built to be kept: a mirror it never writes to, more than one branch, embeddings where you want them, and backups that restore the index rather than rebuilding it."
+          title={fa ? 'نمایه‌ای که کهنه شود از هیچ بدتر است.' : 'An index that goes stale is worse than none.'}
+          standfirst={
+            fa
+              ? 'Argus برای نگه‌داشتن ساخته شده: آینه‌ای که هرگز در آن نمی‌نویسد، بیش از یک شاخه، امبدینگ هرجا که بخواهید و پشتیبان‌هایی که نمایه را بازمی‌گردانند نه بازسازی.'
+              : 'Argus is built to be kept: a mirror it never writes to, more than one branch, embeddings where you want them, and backups that restore the index rather than rebuilding it.'
+          }
         />
-        <IndexList items={keptCurrent} />
+        <IndexList items={kept} />
 
         <p className="note mt-s">
-          <strong>Argus alone</strong>
-          It also runs without the platform, reachable at argus.DOMAIN/mcp for a team that wants the
-          index before it wants the rest. The{' '}
-          <a
-            href={SITE.argusDocs}
-            target="_blank"
-            rel="noreferrer noopener"
-            className="text-link"
-          >
-            manual
+          <strong>{fa ? 'Argus به‌تنهایی' : 'Argus alone'}</strong>
+          {fa
+            ? ' بدون پلتفرم هم اجرا می‌شود، در argus.DOMAIN/mcp، برای تیمی که نمایه را پیش از بقیه می‌خواهد. '
+            : ' It also runs without the platform, reachable at argus.DOMAIN/mcp for a team that wants the index before it wants the rest. The '}
+          <a href={SITE.argusDocs} target="_blank" rel="noreferrer noopener" className="text-link">
+            {fa ? 'راهنما' : 'manual'}
           </a>{' '}
-          says how.
+          {fa ? 'می‌گوید چطور.' : 'says how.'}
         </p>
       </Chapter>
 
       <CtaBand
         title={
-          <>
-            Stop asking a model to <em>remember your code.</em>
-          </>
+          fa ? (
+            <>
+              از مدل نخواهید <em>کد شما را به‌خاطر بسپارد.</em>
+            </>
+          ) : (
+            <>
+              Stop asking a model to <em>remember your code.</em>
+            </>
+          )
         }
-        lead="Point Argus at your GitLab and let it answer with the file, the line and the diff. We can walk through it against a repository you choose."
+        lead={
+          fa
+            ? 'Argus را به GitLab خود وصل کنید تا با فایل، خط و دیف پاسخ دهد. می‌توانیم روی مخزنی که انتخاب می‌کنید معرفی کامل انجام دهیم.'
+            : 'Point Argus at your GitLab and let it answer with the file, the line and the diff. We can walk through it against a repository you choose.'
+        }
       />
     </>
   )

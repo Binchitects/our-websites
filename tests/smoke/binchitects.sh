@@ -25,6 +25,16 @@ grep -q 'Open by default' "$tmp/body" || fail "the page was not prerendered"
 grep -q 'href="https://argus.binchitects.com"' "$tmp/body" || fail "the link to Argus is missing"
 pass "/ serves the prerendered studio page"
 
+status="$(code "$BASE_URL/fa")"
+[ "$status" = "200" ] || fail "/fa answered $status"
+fetch "$BASE_URL/fa"
+grep -qi "<title>.*Binchitects.*</title>" "$tmp/body" || fail "the Persian title is missing"
+grep -qi '<html[^>]*lang="fa"[^>]*dir="rtl"' "$tmp/body" || fail "the Persian page is not RTL"
+grep -q 'در باز است' "$tmp/body" || fail "the Persian page was not prerendered"
+grep -q 'href="https://argus.binchitects.com"' "$tmp/body" || fail "the Argus link is missing from the Persian page"
+grep -qi 'hreflang="fa"' "$tmp/body" || fail "the Persian hreflang is missing"
+pass "/fa serves the prerendered Persian page"
+
 for header in content-security-policy x-content-type-options referrer-policy permissions-policy; do
   grep -qi "^$header:" "$tmp/headers" || fail "the site does not send $header"
 done

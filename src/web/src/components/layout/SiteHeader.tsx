@@ -1,8 +1,11 @@
 import { useEffect, useState } from 'react'
-import { Link, NavLink, useLocation } from 'react-router-dom'
+import { useLocation } from 'react-router-dom'
 import { ArrowUpRight, Moon, Sun } from 'lucide-react'
 import { Logo } from '@/components/Logo'
+import { LangSwitch } from '@/components/ui/LangSwitch'
+import { Link, NavLink } from '@/components/ui/LocalLink'
 import { NAV, SITE } from '@/lib/content'
+import { useLang } from '@/lib/i18n'
 
 type Theme = 'dark' | 'light'
 
@@ -18,6 +21,9 @@ export function SiteHeader() {
   const [open, setOpen] = useState(false)
   const [theme, setTheme] = useState<Theme>('dark')
   const location = useLocation()
+  const lang = useLang()
+  const fa = lang === 'fa'
+  const navLabel = (item: (typeof NAV)[number]) => (fa ? (item.labelFa ?? item.label) : item.label)
 
   useEffect(() => {
     setTheme(currentTheme())
@@ -57,29 +63,30 @@ export function SiteHeader() {
         <div className="shell masthead-inner">
           <Logo />
 
-          <nav className="nav" aria-label="Main">
+          <nav className="nav" aria-label={fa ? 'اصلی' : 'Main'}>
             {NAV.map((item) => (
               <NavLink key={item.href} to={item.href} className="nav-link">
-                {item.label}
+                {navLabel(item)}
               </NavLink>
             ))}
           </nav>
 
           <div className="mast-actions">
+            <LangSwitch />
             <a href={SITE.github} target="_blank" rel="noreferrer noopener" className="source-link">
-              Source ↗
+              {fa ? 'کد منبع ↗' : 'Source ↗'}
             </a>
             <button
               type="button"
               onClick={toggleTheme}
               className="theme-toggle"
-              aria-label={theme === 'dark' ? 'Use the light theme' : 'Use the dark theme'}
+              aria-label={theme === 'dark' ? (fa ? 'استفاده از پوستهٔ روشن' : 'Use the light theme') : (fa ? 'استفاده از پوستهٔ تیره' : 'Use the dark theme')}
             >
               {theme === 'dark' ? <Sun size={12} aria-hidden /> : <Moon size={12} aria-hidden />}
-              {theme === 'dark' ? 'Light' : 'Dark'}
+              {theme === 'dark' ? (fa ? 'روشن' : 'Light') : (fa ? 'تیره' : 'Dark')}
             </button>
             <Link to="/contact" className="btn btn-outline btn-sm">
-              Talk to us
+              {fa ? 'با ما حرف بزنید' : 'Talk to us'}
               <ArrowUpRight size={12} aria-hidden />
             </Link>
             <button
@@ -88,9 +95,9 @@ export function SiteHeader() {
               className="menu-toggle"
               aria-expanded={open}
               aria-controls="mobile-menu"
-              aria-label={open ? 'Close the menu' : 'Open the menu'}
+              aria-label={open ? (fa ? 'بستن منو' : 'Close the menu') : (fa ? 'باز کردن منو' : 'Open the menu')}
             >
-              {open ? 'Close' : 'Menu'}
+              {open ? (fa ? 'بستن' : 'Close') : (fa ? 'منو' : 'Menu')}
             </button>
           </div>
         </div>
@@ -106,21 +113,22 @@ export function SiteHeader() {
         <div className="shell mobile-menu-top">
           <Logo />
           <button type="button" onClick={() => setOpen(false)} className="menu-toggle" style={{ display: 'inline-flex' }}>
-            Close
+            {fa ? 'بستن' : 'Close'}
           </button>
         </div>
         <div className="shell mobile-menu-body">
-          <nav className="mobile-menu-list" aria-label="Mobile">
+          <nav className="mobile-menu-list" aria-label={fa ? 'منوی موبایل' : 'Mobile'}>
             {NAV.map((item, index) => (
               <NavLink key={item.href} to={item.href}>
                 <span>{String(index + 1).padStart(2, '0')}</span>
-                {item.label}
+                {navLabel(item)}
               </NavLink>
             ))}
           </nav>
           <div className="mobile-menu-foot">
+            <LangSwitch className="mobile-lang" />
             <Link to="/contact" className="btn btn-solid">
-              Talk to us
+              {fa ? 'با ما حرف بزنید' : 'Talk to us'}
               <ArrowUpRight size={14} aria-hidden />
             </Link>
             <a
@@ -129,12 +137,12 @@ export function SiteHeader() {
               rel="noreferrer noopener"
               className="btn btn-outline"
             >
-              Source on GitHub
+              {fa ? 'کد منبع در GitHub' : 'Source on GitHub'}
               <ArrowUpRight size={14} aria-hidden />
             </a>
             <button type="button" onClick={toggleTheme} className="theme-toggle" style={{ alignSelf: 'flex-start' }}>
               {theme === 'dark' ? <Sun size={12} aria-hidden /> : <Moon size={12} aria-hidden />}
-              {theme === 'dark' ? 'Light theme' : 'Dark theme'}
+              {theme === 'dark' ? (fa ? 'پوستهٔ روشن' : 'Light theme') : (fa ? 'پوستهٔ تیره' : 'Dark theme')}
             </button>
             <p className="dateline" style={{ marginTop: '18px' }}>
               <span>Argus Arena</span>

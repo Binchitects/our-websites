@@ -1,4 +1,5 @@
 @import '@fontsource-variable/archivo/wdth.css';
+@import '@fontsource-variable/vazirmatn/index.css';
 @import '@fontsource-variable/ibm-plex-sans/index.css';
 @import '@fontsource/ibm-plex-mono/400.css';
 @import '@fontsource/ibm-plex-mono/500.css';
@@ -119,7 +120,7 @@ ul {
 .skip-link {
   position: fixed;
   top: 10px;
-  left: 10px;
+  inset-inline-start: 10px;
   z-index: 100;
   padding: 10px 14px;
   background: var(--orange);
@@ -161,6 +162,116 @@ ul {
   flex: none;
 }
 
+
+/* ---------- Persian ---------- */
+
+html[lang='fa'] {
+  --font-display: 'Vazirmatn Variable', 'Vazirmatn', 'Archivo variable', sans-serif;
+  --font-sans: 'Vazirmatn Variable', 'Vazirmatn', 'IBM Plex Sans', sans-serif;
+  --font-mono: 'Vazirmatn Variable', 'Vazirmatn', 'IBM Plex Mono', monospace;
+}
+
+html[lang='fa'] body {
+  line-height: 1.85;
+  letter-spacing: normal;
+}
+
+html[lang='fa'] .wordmark,
+html[lang='fa'] .work h2 { direction: ltr; }
+
+html[lang='fa'] .wordmark,
+html[lang='fa'] .work h2,
+html[lang='fa'] .mast-argus,
+html[lang='fa'] .button {
+  font-family: 'Archivo Variable', 'Archivo', sans-serif;
+}
+
+html[lang='fa'] h1,
+html[lang='fa'] h2,
+html[lang='fa'] h3,
+html[lang='fa'] h4 {
+  line-height: 1.2;
+  letter-spacing: -0.015em;
+}
+
+html[lang='fa'] .hero h1 {
+  font-size: clamp(2.6rem, 6.2vw, 5.6rem);
+  line-height: 1.18;
+  letter-spacing: -0.02em;
+}
+
+html[lang='fa'] .work h2 {
+  font-size: clamp(2.7rem, 6.2vw, 5.6rem);
+}
+
+html[lang='fa'] .vision h2 {
+  font-size: clamp(2.2rem, 4.9vw, 4.6rem);
+  line-height: 1.25;
+}
+
+html[lang='fa'] .hero-date,
+html[lang='fa'] .chapter-top,
+html[lang='fa'] .hero-rule,
+html[lang='fa'] .spec-row,
+html[lang='fa'] .way-number,
+html[lang='fa'] .way-label,
+html[lang='fa'] .community-note,
+html[lang='fa'] .principles li,
+html[lang='fa'] .footer-base,
+html[lang='fa'] .footer-cols h2,
+html[lang='fa'] .mast-nav,
+html[lang='fa'] .mast-argus,
+html[lang='fa'] .lang-switch {
+  letter-spacing: 0.02em;
+  text-transform: none;
+}
+
+html[dir='rtl'] .lucide-arrow-up-right {
+  transform: scaleX(-1);
+}
+
+.lang-switch {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-family: var(--font-mono);
+  font-size: 9px;
+  letter-spacing: 0.12em;
+  color: var(--muted);
+  line-height: 1;
+}
+
+.lang-switch a {
+  padding: 3px 3px 4px;
+  border-bottom: 1px solid transparent;
+  color: var(--muted);
+  transition: color 0.16s var(--ease), border-color 0.16s var(--ease);
+}
+
+.lang-switch a:hover,
+.lang-switch a.is-current {
+  color: var(--paper);
+  border-color: var(--orange);
+}
+
+.lang-sep {
+  color: #4a4541;
+}
+
+.header-lang {
+  margin-inline-start: 2px;
+}
+
+.footer-lang {
+  margin-inline-start: auto;
+}
+
+@media (max-width: 760px) {
+  html[lang='fa'] .hero h1 {
+    font-size: clamp(2.2rem, 10.2vw, 3.4rem);
+  }
+}
+
 .wordmark {
   display: inline-flex;
   align-items: baseline;
@@ -184,7 +295,7 @@ ul {
   display: flex;
   align-items: center;
   gap: clamp(18px, 2.6vw, 34px);
-  margin-left: auto;
+  margin-inline-start: auto;
 }
 
 .mast-nav a {
@@ -453,8 +564,8 @@ ul {
   flex-direction: column;
   align-items: flex-start;
   gap: 24px;
-  padding-left: clamp(20px, 3.4vw, 44px);
-  border-left: 1px solid var(--rule-paper);
+  padding-inline-start: clamp(20px, 3.4vw, 44px);
+  border-inline-start: 1px solid var(--rule-paper);
 }
 
 .argus-glyph {
@@ -483,8 +594,8 @@ ul {
 }
 
 .spec-row li:not(:first-child) {
-  padding-left: 14px;
-  border-left: 1px solid var(--rule-paper);
+  padding-inline-start: 14px;
+  border-inline-start: 1px solid var(--rule-paper);
 }
 
 /* ---------- Community ---------- */
@@ -848,9 +959,9 @@ ul {
     flex-direction: row;
     align-items: center;
     gap: 22px;
-    padding-left: 0;
+    padding-inline-start: 0;
     padding-top: 24px;
-    border-left: 0;
+    border-inline-start: 0;
     border-top: 1px solid var(--rule-paper);
   }
 
@@ -946,8 +1057,8 @@ ul {
   }
 
   .spec-row li:nth-child(3) {
-    padding-left: 0;
-    border-left: 0;
+    padding-inline-start: 0;
+    border-inline-start: 0;
   }
 
   .way {
@@ -970,6 +1081,21 @@ ul {
   }
 }
 
+@media (max-width: 380px) {
+  .masthead-inner {
+    gap: 10px;
+  }
+
+  .wordmark {
+    font-size: 19px;
+  }
+
+  .mast-argus {
+    padding: 7px 8px;
+    font-size: 8px;
+  }
+}
+
 @media (max-width: 480px) {
   .hero-actions .button {
     width: 100%;
@@ -985,6 +1111,6 @@ ul {
   }
 
   .spec-row li:not(:first-child) {
-    padding-left: 10px;
+    padding-inline-start: 10px;
   }
 }

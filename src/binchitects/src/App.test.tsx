@@ -31,6 +31,16 @@ describe('Binchitects', () => {
     )
   })
 
+  it('renders the Persian page and its language switch', () => {
+    render(<App initialLang="fa" />)
+    expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent(/آشکارا/)
+    expect(screen.getAllByRole('link', { name: 'EN' })[0]).toHaveAttribute('href', '/')
+    expect(screen.getAllByRole('link', { name: /Argus Arena/ })[0]).toHaveAttribute(
+      'href',
+      'https://argus.binchitects.com',
+    )
+  })
+
   it('states the long-run position', () => {
     render(<App />)
     expect(screen.getByRole('heading', { name: /Build for the decade/ })).toBeInTheDocument()

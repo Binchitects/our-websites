@@ -1,4 +1,5 @@
 import { useId } from 'react'
+import { useLang } from '@/lib/i18n'
 
 /**
  * The seal of Argus: an optical instrument drawn as an engraving. A dial of
@@ -7,6 +8,7 @@ import { useId } from 'react'
  * so the instrument reads as a colour dial and not a monochrome one.
  */
 export function ArgusSeal({ className }: { className?: string }) {
+  const fa = useLang() === 'fa'
   const id = useId().replace(/:/g, '')
   const irisId = `seal-iris-${id}`
   const clipId = `seal-clip-${id}`
@@ -107,7 +109,7 @@ export function ArgusSeal({ className }: { className?: string }) {
       viewBox="0 0 640 640"
       className={className}
       role="img"
-      aria-label="The seal of Argus: an eye with an iris in fine radial lines, surrounded by an optical dial"
+      aria-label={fa ? "مهر Argus: چشمی با آیریسی از خطوط شعاعی ظریف، در میان یک صفحهٔ نوری" : "The seal of Argus: an eye with an iris in fine radial lines, surrounded by an optical dial"}
       xmlns="http://www.w3.org/2000/svg"
     >
       <defs>
@@ -244,17 +246,19 @@ export function ArgusSeal({ className }: { className?: string }) {
 
 /** The seal in its printed plate, with the figure's title and a vertical caption. */
 export function ArgusSealFigure() {
+  const fa = useLang() === 'fa'
+
   return (
     <figure className="eye-plate">
       <div className="eye-figure">
         <span className="eye-vertical" aria-hidden>
-          a hundred eyes · one index
+          {fa ? 'صد چشم · یک نمایه' : 'a hundred eyes · one index'}
         </span>
         <ArgusSeal className="eye-svg" />
       </div>
       <figcaption className="eye-caption">
-        <span>FIG. 01</span>
-        <span>the seal of argus · the optical index</span>
+        <span>{fa ? 'شکل ۰۱' : 'FIG. 01'}</span>
+        <span>{fa ? 'مهر Argus · نمایهٔ نوری' : 'the seal of argus · the optical index'}</span>
       </figcaption>
     </figure>
   )

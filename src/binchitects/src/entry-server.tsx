@@ -1,7 +1,8 @@
 import { renderToString } from 'react-dom/server'
 import { App } from './App'
+import type { Lang } from './lib/locale'
 
-/** The page is static: render it at build time so the HTML carries the words. */
-export function render() {
-  return renderToString(<App />)
+/** The page is static: render each language at build time. */
+export function render(lang: Lang = 'en') {
+  return renderToString(<App initialLang={lang} />)
 }

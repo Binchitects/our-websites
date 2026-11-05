@@ -1,5 +1,6 @@
 import { ArrowUpRight } from 'lucide-react'
-import { Link } from 'react-router-dom'
+import { Link } from '@/components/ui/LocalLink'
+
 import type { ReactNode } from 'react'
 
 export type IndexItem = {

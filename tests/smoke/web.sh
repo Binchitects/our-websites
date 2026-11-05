@@ -36,6 +36,14 @@ check_route "/changelog" "Changelog"
 check_route "/contact" "Talk to us"
 check_route "/privacy" "Privacy"
 check_route "/brand" "Brand"
+check_route "/fa" "ARGUS"
+check_route "/fa/platform" "پلتفرم"
+check_route "/fa/brand" "برند"
+
+fetch "$BASE_URL/fa"
+grep -qi '<html[^>]*lang="fa"[^>]*dir="rtl"' "$tmp/body" || fail "the Persian shell is not RTL"
+grep -qi 'hreflang="fa"' "$tmp/body" || fail "the Persian hreflang is missing"
+pass "the Persian shell declares its language, direction and alternate"
 
 fetch "$BASE_URL/"
 for header in content-security-policy x-content-type-options referrer-policy permissions-policy; do

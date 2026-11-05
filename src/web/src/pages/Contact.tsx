@@ -1,40 +1,62 @@
 import { useMemo, useState, type FormEvent } from 'react'
-import { Link, useSearchParams } from 'react-router-dom'
+import { useSearchParams } from 'react-router-dom'
+import { Link } from '@/components/ui/LocalLink'
 import { ArrowRight, ArrowUpRight, Loader2, Send } from 'lucide-react'
 import { z } from 'zod'
 import { ArticleOpener } from '@/components/ui/ArticleOpener'
 import { Chapter } from '@/components/ui/Chapter'
 import { CONTACT_TOPICS, SITE } from '@/lib/content'
-import { routeMeta } from '@/lib/route-meta'
-import { useSeo } from '@/lib/seo'
+import { usePageSeo } from '@/lib/seo'
+import { useLang } from '@/lib/i18n'
 
 const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 
-const contactSchema = z.object({
-  name: z
-    .string()
-    .trim()
-    .min(2, 'Please tell us your name.')
-    .max(120, 'Please keep your name under 120 characters.'),
-  email: z
-    .string()
-    .trim()
-    .min(1, 'Please add an email address we can reply to.')
-    .max(254, 'That address is too long.')
-    .regex(emailPattern, 'That does not look like an email address.'),
-  company: z.string().trim().max(160, 'Please keep the company name under 160 characters.'),
-  topic: z.string().refine((value) => CONTACT_TOPICS.some((topic) => topic.value === value), {
-    message: 'Choose what your message is about.',
-  }),
-  message: z
-    .string()
-    .trim()
-    .min(20, 'A sentence or two helps us answer well (at least 20 characters).')
-    .max(4000, 'Please keep the message under 4,000 characters.'),
-  consent: z.boolean().refine((value) => value, {
-    message: 'Please agree to us using your details to reply.',
-  }),
-})
+function schemaFor(fa: boolean) {
+  const m = fa
+    ? {
+        name: 'لطفاً نام خود را بگویید.',
+        nameMax: 'نام را زیر ۱۲۰ نویسه نگه دارید.',
+        email: 'لطفاً نشانی ایمیلی بنویسید که بتوانیم پاسخ دهیم.',
+        emailMax: 'این نشانی بیش از حد بلند است.',
+        emailInvalid: 'این نشانی شبیه ایمیل نیست.',
+        company: 'نام شرکت را زیر ۱۶۰ نویسه نگه دارید.',
+        topic: 'موضوع پیام را انتخاب کنید.',
+        message: 'یک یا دو جمله کمک می‌کند خوب پاسخ دهیم (حداقل ۲۰ نویسه).',
+        messageMax: 'پیام را زیر ۴٬۰۰۰ نویسه نگه دارید.',
+        consent: 'لطفاً موافقت کنید که از مشخصات شما برای پاسخ استفاده کنیم.',
+      }
+    : {
+        name: 'Please tell us your name.',
+        nameMax: 'Please keep your name under 120 characters.',
+        email: 'Please add an email address we can reply to.',
+        emailMax: 'That address is too long.',
+        emailInvalid: 'That does not look like an email address.',
+        company: 'Please keep the company name under 160 characters.',
+        topic: 'Choose what your message is about.',
+        message: 'A sentence or two helps us answer well (at least 20 characters).',
+        messageMax: 'Please keep the message under 4,000 characters.',
+        consent: 'Please agree to us using your details to reply.',
+      }
+
+  return z.object({
+    name: z.string().trim().min(2, m.name).max(120, m.nameMax),
+    email: z
+      .string()
+      .trim()
+      .min(1, m.email)
+      .max(254, m.emailMax)
+      .regex(emailPattern, m.emailInvalid),
+    company: z.string().trim().max(160, m.company),
+    topic: z.string().refine((value) => CONTACT_TOPICS.some((topic) => topic.value === value), {
+      message: m.topic,
+    }),
+    message: z.string().trim().min(20, m.message).max(4000, m.messageMax),
+    consent: z.boolean().refine((value) => value, { message: m.consent }),
+  })
+}
+
+const contactSchema = schemaFor(false)
+const contactSchemaFa = schemaFor(true)
 
 type Values = {
   name: string
@@ -62,8 +84,15 @@ const nextSteps = [
   'You choose the next step: a walkthrough, a licence, or the architecture.',
 ]
 
+const nextStepsFa = [
+  'یک انسان آن را می‌خواند — پیام‌ها به Binchitects می‌رسند، نه به یک ربات تیکت.',
+  'با ایمیل پاسخ می‌دهیم، با یک پاسخ صریح یا زمانی برای گفتگو.',
+  'قدم بعد را شما انتخاب می‌کنید: معرفی کامل، مجوز یا معماری.',
+]
+
 export function Contact() {
-  useSeo({ ...routeMeta('/contact'), path: '/contact' })
+  usePageSeo('/contact')
+  const fa = useLang() === 'fa'
 
   const [params] = useSearchParams()
   const requestedTopic = params.get('topic') ?? ''
@@ -78,10 +107,10 @@ export function Contact() {
   const [honeypot, setHoneypot] = useState('')
 
   const busy = status === 'sending'
-  const topicLabel = useMemo(
-    () => CONTACT_TOPICS.find((entry) => entry.value === values.topic)?.label ?? 'Message',
-    [values.topic],
-  )
+  const topicLabel = useMemo(() => {
+    const entry = CONTACT_TOPICS.find((item) => item.value === values.topic)
+    return entry ? (fa ? entry.labelFa : entry.label) : fa ? 'پیام' : 'Message'
+  }, [values.topic, fa])
 
   const update = (field: keyof Values, value: string | boolean) => {
     setValues((current) => ({ ...current, [field]: value }))
@@ -97,7 +126,7 @@ export function Contact() {
     event.preventDefault()
     setNotice(null)
 
-    const parsed = contactSchema.safeParse(values)
+    const parsed = (fa ? contactSchemaFa : contactSchema).safeParse(values)
     if (!parsed.success) {
       const next: Record<string, string> = {}
       for (const issue of parsed.error.issues) {
@@ -128,11 +157,11 @@ export function Contact() {
         const problem = (await response.json()) as { errors?: Record<string, string[]> }
         const next: Record<string, string> = {}
         for (const [field, messages] of Object.entries(problem.errors ?? {})) {
-          next[field.toLowerCase()] = messages[0] ?? 'That does not look right.'
+          next[field.toLowerCase()] = fa ? 'لطفاً این فیلد را بررسی کنید.' : (messages[0] ?? 'That does not look right.')
         }
         setErrors(next)
         setStatus('idle')
-        setNotice('Some fields need another look.')
+        setNotice(fa ? 'برخی فیلدها نیاز به بازبینی دارند.' : 'Some fields need another look.')
         return
       }
 
@@ -143,36 +172,42 @@ export function Contact() {
           : 10
         setStatus('rate-limited')
         setNotice(
-          `Too many messages from this connection. Please try again in about ${minutes} minutes.`,
+          fa
+            ? `پیام‌های زیادی از این اتصال فرستاده شده. لطفاً حدود ${minutes} دقیقه دیگر دوباره تلاش کنید.`
+            : `Too many messages from this connection. Please try again in about ${minutes} minutes.`,
         )
         return
       }
 
       setStatus('failed')
-      setNotice('The message could not be sent. Please try again, or open an issue on GitHub.')
+      setNotice(fa ? 'پیام فرستاده نشد. لطفاً دوباره تلاش کنید یا در GitHub ایشو باز کنید.' : 'The message could not be sent. Please try again, or open an issue on GitHub.')
     } catch {
       setStatus('failed')
-      setNotice('The message could not be sent. Check your connection, or open an issue on GitHub.')
+      setNotice(fa ? 'پیام فرستاده نشد. اتصال را بررسی کنید یا در GitHub ایشو باز کنید.' : 'The message could not be sent. Check your connection, or open an issue on GitHub.')
     }
   }
 
   return (
     <>
       <ArticleOpener
-        section="Contact"
+        section={fa ? 'تماس' : 'Contact'}
         title={
           <>
-            Bring your AI
+            {fa ? 'هوش مصنوعی را' : 'Bring your AI'}
             <br />
-            <em>home.</em>
+            <em>{fa ? 'به خانه بیاورید.' : 'home.'}</em>
           </>
         }
-        standfirst="Tell us what you run today — the models, the GitLab, the sign-in you already have — and we will answer with a straight path to a deployment you own."
+        standfirst={
+          fa
+            ? 'بگویید امروز چه چیزی اجرا می‌کنید — مدل‌ها، GitLab، ورودی که همین حالا دارید — تا با مسیری صریح به استقراری که مالِ خودتان است پاسخ دهیم.'
+            : 'Tell us what you run today — the models, the GitLab, the sign-in you already have — and we will answer with a straight path to a deployment you own.'
+        }
         aside={
           <>
-            <p className="micro micro-ink">What happens next</p>
+            <p className="micro micro-ink">{fa ? 'بعد چه می‌شود' : 'What happens next'}</p>
             <ul className="mini-list" style={{ marginTop: '10px' }}>
-              {nextSteps.map((step) => (
+              {(fa ? nextStepsFa : nextSteps).map((step) => (
                 <li key={step}>{step}</li>
               ))}
             </ul>
@@ -180,15 +215,15 @@ export function Contact() {
         }
       />
 
-      <Chapter number="01" label="A message">
+      <Chapter number="01" label={fa ? 'یک پیام' : 'A message'}>
         <div className="contact-grid">
           {status === 'sent' ? (
             <div className="form-success">
-              <h2>Message sent.</h2>
+              <h2>{fa ? 'پیام فرستاده شد.' : 'Message sent.'}</h2>
               <p className="body mt-s">
-                Thank you, {values.name.trim().split(' ')[0] || 'friend'}. Your message about{' '}
-                {topicLabel.toLowerCase()} is with us, and we will reply to{' '}
-                <span className="text-ink">{values.email}</span>.
+                {fa
+                  ? `ممنون، ${values.name.trim().split(' ')[0] || 'دوست عزیز'}. پیام شما دربارهٔ ${topicLabel} به دست ما رسید و به ${values.email} پاسخ می‌دهیم.`
+                  : `Thank you, ${values.name.trim().split(' ')[0] || 'friend'}. Your message about ${topicLabel.toLowerCase()} is with us, and we will reply to ${values.email}.`}
               </p>
               <div className="row mt-m">
                 <button
@@ -200,10 +235,10 @@ export function Contact() {
                   }}
                   className="btn btn-outline btn-sm"
                 >
-                  Send another
+                  {fa ? 'ارسال پیام دیگر' : 'Send another'}
                 </button>
                 <Link to="/code-arena" className="arrow-link">
-                  While you wait, see Code Arena
+                  {fa ? 'تا پاسخ، Code Arena را ببینید' : 'While you wait, see Code Arena'}
                   <ArrowRight size={13} aria-hidden />
                 </Link>
               </div>
@@ -211,19 +246,19 @@ export function Contact() {
           ) : (
             <form onSubmit={submit} noValidate className="form">
               <div className="subhead">
-                <h2 className="serif-m">Send a message</h2>
-                <span className="micro">Reply by email</span>
+                <h2 className="serif-m">{fa ? 'پیامی بفرستید' : 'Send a message'}</h2>
+                <span className="micro">{fa ? 'پاسخ با ایمیل' : 'Reply by email'}</span>
               </div>
 
               <div className="form-grid">
                 <div className="field">
-                  <label htmlFor="name">Name</label>
+                  <label htmlFor="name">{fa ? 'نام' : 'Name'}</label>
                   <input
                     id="name"
                     name="name"
                     autoComplete="name"
                     className="input"
-                    placeholder="Sara Ahmadi"
+                    placeholder={fa ? 'سارا احمدی' : 'Sara Ahmadi'}
                     value={values.name}
                     onChange={(event) => update('name', event.target.value)}
                     aria-invalid={Boolean(errors.name)}
@@ -238,14 +273,14 @@ export function Contact() {
                 </div>
 
                 <div className="field">
-                  <label htmlFor="email">Email</label>
+                  <label htmlFor="email">{fa ? 'ایمیل' : 'Email'}</label>
                   <input
                     id="email"
                     name="email"
                     type="email"
                     autoComplete="email"
                     className="input"
-                    placeholder="you@company.com"
+                    placeholder={fa ? 'you@company.com' : 'you@company.com'}
                     value={values.email}
                     onChange={(event) => update('email', event.target.value)}
                     aria-invalid={Boolean(errors.email)}
@@ -261,15 +296,15 @@ export function Contact() {
 
                 <div className="field">
                   <label htmlFor="company">
-                    Company
-                    <span className="hint">optional</span>
+                    {fa ? 'شرکت' : 'Company'}
+                    <span className="hint">{fa ? 'اختیاری' : 'optional'}</span>
                   </label>
                   <input
                     id="company"
                     name="company"
                     autoComplete="organization"
                     className="input"
-                    placeholder="Where you work"
+                    placeholder={fa ? 'محل کار شما' : 'Where you work'}
                     value={values.company}
                     onChange={(event) => update('company', event.target.value)}
                     aria-invalid={Boolean(errors.company)}
@@ -284,7 +319,7 @@ export function Contact() {
                 </div>
 
                 <div className="field">
-                  <label htmlFor="topic">What is this about?</label>
+                  <label htmlFor="topic">{fa ? 'موضوع چیست؟' : 'What is this about?'}</label>
                   <div className="select-wrap">
                     <select
                       id="topic"
@@ -296,7 +331,7 @@ export function Contact() {
                     >
                       {CONTACT_TOPICS.map((entry) => (
                         <option key={entry.value} value={entry.value}>
-                          {entry.label}
+                          {fa ? entry.labelFa : entry.label}
                         </option>
                       ))}
                     </select>
@@ -306,14 +341,14 @@ export function Contact() {
 
                 <div className="field" style={{ gridColumn: '1 / -1' }}>
                   <label htmlFor="message">
-                    Message
-                    <span className="hint">20–4,000 characters</span>
+                    {fa ? 'پیام' : 'Message'}
+                    <span className="hint">{fa ? '۲۰ تا ۴٬۰۰۰ نویسه' : '20–4,000 characters'}</span>
                   </label>
                   <textarea
                     id="message"
                     name="message"
                     className="textarea"
-                    placeholder="We run 40 developers on GitLab and want the chat, the index and a coding agent on four H100s inside our own network."
+                    placeholder={fa ? 'ما ۴۰ توسعه‌دهنده روی GitLab داریم و چت، نمایه و یک عامل کدنویسی را روی چهار H100 داخل شبکهٔ خودمان می‌خواهیم.' : 'We run 40 developers on GitLab and want the chat, the index and a coding agent on four H100s inside our own network.'}
                     value={values.message}
                     onChange={(event) => update('message', event.target.value)}
                     aria-invalid={Boolean(errors.message)}
@@ -327,7 +362,7 @@ export function Contact() {
                   )}
                 </div>
 
-                <div style={{ position: 'absolute', left: '-9999px' }} aria-hidden="true">
+                <div className="honeypot" aria-hidden="true">
                   <label htmlFor="website">Website</label>
                   <input
                     id="website"
@@ -352,12 +387,13 @@ export function Contact() {
                       disabled={busy}
                     />
                     <span>
-                      I agree to Binchitects using these details to reply to me. They are not sold
-                      or used for marketing. See the{' '}
+                      {fa
+                        ? 'موافقم Binchitects از این مشخصات برای پاسخ به من استفاده کند. فروخته نمی‌شوند و برای بازاریابی استفاده نمی‌شوند. '
+                        : 'I agree to Binchitects using these details to reply to me. They are not sold or used for marketing. See the '}
                       <Link to="/privacy" className="text-link">
-                        privacy note
+                        {fa ? 'یادداشت حریم خصوصی' : 'privacy note'}
                       </Link>
-                      .
+                      {fa ? '.' : '.'}
                     </span>
                   </label>
                   {errors.consent && (
@@ -378,7 +414,7 @@ export function Contact() {
                       rel="noreferrer noopener"
                       className="text-link"
                     >
-                      Open an issue
+                      {fa ? 'باز کردن ایشو' : 'Open an issue'}
                     </a>
                   )}
                 </p>
@@ -389,39 +425,52 @@ export function Contact() {
                   {busy ? (
                     <>
                       <Loader2 size={14} className="spin" aria-hidden />
-                      Sending
+                      {fa ? 'در حال ارسال' : 'Sending'}
                     </>
                   ) : (
                     <>
-                      Send message
+                      {fa ? 'ارسال پیام' : 'Send message'}
                       <Send size={13} aria-hidden />
                     </>
                   )}
                 </button>
-                <span className="form-note">Your address is stored only as a hash.</span>
+                <span className="form-note">
+                  {fa ? 'نشانی شما فقط به‌صورت هش نگه داشته می‌شود.' : 'Your address is stored only as a hash.'}
+                </span>
               </div>
             </form>
           )}
 
           <aside className="contact-aside">
             <div className="contact-note">
-              <h2>Rather not use a form?</h2>
+              <h2>{fa ? 'فرم را دوست ندارید؟' : 'Rather not use a form?'}</h2>
               <p>
-                Open an issue in the repository under a title that says what you need. For a
-                commercial licence, use <span className="mono">Commercial license</span> as the
-                title, as LICENSING.md asks.
+                {fa ? (
+                  <>
+                    در مخزن، با عنوانی که نیازتان را می‌گوید، ایشو باز کنید. برای مجوز تجاری،
+                    مطابق LICENSING.md عنوان را <span className="mono">Commercial license</span>{' '}
+                    بگذارید.
+                  </>
+                ) : (
+                  <>
+                    Open an issue in the repository under a title that says what you need. For a
+                    commercial licence, use <span className="mono">Commercial license</span> as the
+                    title, as LICENSING.md asks.
+                  </>
+                )}
               </p>
               <a href={SITE.issues} target="_blank" rel="noreferrer noopener" className="arrow-link">
-                Binchitects/argus issues
+                {fa ? 'ایشوهای Binchitects/argus' : 'Binchitects/argus issues'}
                 <ArrowUpRight size={12} aria-hidden />
               </a>
             </div>
 
             <div className="contact-note">
-              <h2>Security reports</h2>
+              <h2>{fa ? 'گزارش‌های امنیتی' : 'Security reports'}</h2>
               <p>
-                Please do not put a vulnerability in this form or a public issue. The security policy
-                says how to reach the maintainers privately.
+                {fa
+                  ? 'لطفاً آسیب‌پذیری را در این فرم یا در یک ایشوی عمومی نگذارید. سیاست امنیتی می‌گوید چطور خصوصی به نگه‌دارندگان برسید.'
+                  : 'Please do not put a vulnerability in this form or a public issue. The security policy says how to reach the maintainers privately.'}
               </p>
               <a
                 href={SITE.securityPolicy}
@@ -429,16 +478,17 @@ export function Contact() {
                 rel="noreferrer noopener"
                 className="arrow-link"
               >
-                Security policy
+                {fa ? 'سیاست امنیتی' : 'Security policy'}
                 <ArrowUpRight size={12} aria-hidden />
               </a>
             </div>
 
             <div className="contact-note">
-              <h2>Before you write</h2>
+              <h2>{fa ? 'پیش از نوشتن' : 'Before you write'}</h2>
               <p>
-                The deployment guide covers the host, the .env and the offline installer. Many
-                questions are already answered there.
+                {fa
+                  ? 'راهنمای استقرار میزبان، ‎.env و نصب‌کنندهٔ آفلاین را پوشش می‌دهد. بسیاری از پرسش‌ها همان‌جا پاسخ داده شده‌اند.'
+                  : 'The deployment guide covers the host, the .env and the offline installer. Many questions are already answered there.'}
               </p>
               <a
                 href={SITE.deployment}
@@ -446,7 +496,7 @@ export function Contact() {
                 rel="noreferrer noopener"
                 className="arrow-link"
               >
-                Deployment guide
+                {fa ? 'راهنمای استقرار' : 'Deployment guide'}
                 <ArrowUpRight size={12} aria-hidden />
               </a>
             </div>

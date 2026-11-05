@@ -11,6 +11,7 @@ import { Privacy } from '@/pages/Privacy'
 import { Brand } from '@/pages/Brand'
 import { NotFound } from '@/pages/NotFound'
 
+/** English at the root; Persian under /fa. */
 export function App() {
   return (
     <Routes>
@@ -24,6 +25,16 @@ export function App() {
         <Route path="contact" element={<Contact />} />
         <Route path="privacy" element={<Privacy />} />
         <Route path="brand" element={<Brand />} />
+
+        <Route path="fa" element={<Home />} />
+        <Route path="fa/platform" element={<Platform />} />
+        <Route path="fa/code-arena" element={<CodeArena />} />
+        <Route path="fa/argus" element={<ArgusPage />} />
+        <Route path="fa/security" element={<Security />} />
+        <Route path="fa/changelog" element={<Changelog />} />
+        <Route path="fa/contact" element={<Contact />} />
+        <Route path="fa/privacy" element={<Privacy />} />
+        <Route path="fa/brand" element={<Brand />} />
         <Route path="*" element={<NotFound />} />
       </Route>
     </Routes>

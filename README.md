@@ -1,6 +1,6 @@
 # Binchitects — two sites, one repository
 
-The public sites for **Binchitects**:
+The public sites for **Binchitects**, in English and Persian:
 
 - **[binchitects.com](https://binchitects.com)** — the studio: a one-page
   statement about community, open-source development and the long run.
@@ -8,7 +8,8 @@ The public sites for **Binchitects**:
   ARGUS, Argus Arena, Code Arena and the Argus code index.
 
 Both front ends are React + TypeScript + Vite, built as static files and served
-by unprivileged nginx images. Argus adds a .NET 10 minimal API behind its site.
+by unprivileged nginx images. Persian lives under `/fa` and mirrors the layout
+right-to-left. Argus adds a .NET 10 minimal API behind its site.
 Three images, built from this repository, deployed together.
 
 <p align="center">
@@ -66,6 +67,7 @@ docker compose down -v          # stop and remove the contact-request volume
 | ![Contact](docs/screenshots/contact.jpg) | ![Platform](docs/screenshots/platform.jpg) |
 | ![The brand page](docs/screenshots/brand.jpg) | ![The seal of Argus](docs/screenshots/seal.jpg) |
 | ![The Binchitects studio page](docs/screenshots/binchitects.jpg) | ![The publisher band](docs/screenshots/publisher.jpg) |
+| ![The Argus home page in Persian](docs/screenshots/home-fa.jpg) | ![The studio page in Persian](docs/screenshots/binchitects-fa.jpg) |
 
 ### The publisher
 
@@ -139,8 +141,8 @@ The API stores contact requests under `src/api/data/` in development and at
 ## Tests
 
 ```bash
-cd src/web && npm test          # 12 unit/component tests (Vitest + Testing Library)
-cd src/binchitects && npm test  # 4 tests for the studio page
+cd src/web && npm test          # 16 unit/component tests (Vitest + Testing Library)
+cd src/binchitects && npm test  # 5 tests for the studio page
 dotnet build                    # the API builds with zero packages
 tests/smoke/api.sh              # against a running stack (API endpoints)
 tests/smoke/web.sh              # against a running stack (static routes + proxy)
@@ -262,9 +264,12 @@ social image are generated from the mark and seal.
 Product moments are printed rather than screenshotted: a radial index chart of
 the Argus tools, a system-section schematic of the stack, a proof sheet from
 Code Arena's IDE, and the agent's trace — each of them colour-coded by the
-spectrum rather than tinted a single blue. Every
-page has route-specific meta in its built HTML for crawlers and link previews,
-and a sitemap is generated at build time.
+spectrum rather than tinted a single blue.
+
+Every page is bilingual: English at the root, Persian under `/fa`. The build
+writes a shell for each language with its own title, description, canonical URL,
+`hreflang` alternates and `lang`/`dir`, and the sitemap lists both. A language
+switch in the masthead keeps the reader on the same page.
 
 ## The studio site
 
@@ -275,10 +280,32 @@ the vision, and one orange band to close. The page is prerendered to HTML at
 build time; a live UTC clock in the dateline is the only moving part besides the
 page entrance.
 
-There are no cards, gradients or glass. The page is Archivo and IBM Plex, rules
-and numbers, and it links to the product (`argus.binchitects.com`), the source,
-the issues and the contributing guide. Everything is a static build; no API and
-no external requests.
+There are no cards, gradients or glass. The page is Archivo, IBM Plex and
+Vazirmatn, rules and numbers, and it links to the product
+(`argus.binchitects.com`), the source, the issues and the contributing guide.
+Everything is a static build; no API and no external requests. It is bilingual
+too: English at `/`, Persian at `/fa`, each with its own prerendered HTML and
+metadata.
+
+## Two languages
+
+Both sites ship in **English** and **Persian**:
+
+- English lives at the root (`/`, `/platform`, …); Persian lives under `/fa`
+  (`/fa`, `/fa/platform`, …).
+- The masthead carries a small `EN / فا` switch. It maps the current page to the
+  other language, preserving the query and hash.
+- Persian is set in **Vazirmatn**, with `dir="rtl"` and logical CSS properties,
+  so the whole layout mirrors: the masthead, the chapter rails, the tables, the
+  forms and the plates. Code and technical tool names stay Latin and LTR.
+- Every route has a Persian title and description in `src/web/src/routes.json`;
+  the build generates `/fa` shells with `lang="fa"`, `dir="rtl"`, `hreflang`
+  alternates and a bilingual sitemap.
+- The studio site prerenders both `/` and `/fa`, with the same alternates and a
+  bilingual sitemap.
+- Persian release notes on `/fa/changelog` are shown in their source language
+  (English), because they come from GitHub; the interface around them is
+  translated.
 
 ## Brand
 

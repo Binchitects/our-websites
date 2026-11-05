@@ -2,7 +2,12 @@
  * The long horizon: a graduated arc from now to the long run, with the open
  * default at its apex. One instrument, no decoration.
  */
-export function Horizon({ className }: { className?: string }) {
+import type { Lang } from '@/lib/locale'
+
+export function Horizon({ className, lang = 'en' }: { className?: string; lang?: Lang }) {
+  const fa = lang === 'fa'
+  const labelFont = fa ? 'Vazirmatn Variable, sans-serif' : 'IBM Plex Mono, monospace'
+  const tracking = fa ? 0 : 2.6
   const CX = 500
   const CY = 280
   const RX = 460
@@ -39,14 +44,30 @@ export function Horizon({ className }: { className?: string }) {
       viewBox="0 0 1000 340"
       className={['horizon', className].filter(Boolean).join(' ')}
       role="img"
-      aria-label="A graduated arc rising from now on the left to the long run on the right, with open by default at its apex."
+      aria-label={fa ? "یک کمان درجه‌بندی‌شده از اکنون در راست تا بلندمدت در چپ، با «آشکارا به‌طور پیش‌فرض» در اوج." : "A graduated arc rising from now on the left to the long run on the right, with open by default at its apex."}
       xmlns="http://www.w3.org/2000/svg"
     >
-      <text x="40" y="34" fontFamily="IBM Plex Mono, monospace" fontSize="10" letterSpacing="2.6" fill="var(--muted)">
-        FIG. 01 / THE LONG HORIZON
+      <text
+        x={fa ? 960 : 40}
+        y="34"
+        textAnchor={fa ? 'end' : 'start'}
+        fontFamily={labelFont}
+        fontSize="10"
+        letterSpacing={tracking}
+        fill="var(--muted)"
+      >
+        {fa ? 'شکل ۰۱ / افق بلند' : 'FIG. 01 / THE LONG HORIZON'}
       </text>
-      <text x="960" y="34" textAnchor="end" fontFamily="IBM Plex Mono, monospace" fontSize="10" letterSpacing="2.6" fill="var(--muted)">
-        OPEN-SOURCE STUDIO
+      <text
+        x={fa ? 40 : 960}
+        y="34"
+        textAnchor={fa ? 'start' : 'end'}
+        fontFamily={labelFont}
+        fontSize="10"
+        letterSpacing={tracking}
+        fill="var(--muted)"
+      >
+        {fa ? 'استودیوی متن‌باز' : 'OPEN-SOURCE STUDIO'}
       </text>
 
       <path
@@ -85,15 +106,31 @@ export function Horizon({ className }: { className?: string }) {
         <circle cx="500" cy="80" r="11" fill="none" stroke="var(--orange)" strokeWidth="0.8" opacity="0.35" />
         <circle cx="500" cy="80" r="4.4" fill="var(--orange)" />
       </g>
-      <text x="500" y="56" textAnchor="middle" fontFamily="IBM Plex Mono, monospace" fontSize="10" letterSpacing="2.8" fill="var(--orange)">
-        OPEN BY DEFAULT
+      <text x="500" y="56" textAnchor="middle" fontFamily={labelFont} fontSize="10" letterSpacing={tracking} fill="var(--orange)">
+        {fa ? 'آشکارا، به‌طور پیش‌فرض' : 'OPEN BY DEFAULT'}
       </text>
 
-      <text x="40" y="310" fontFamily="IBM Plex Mono, monospace" fontSize="10" letterSpacing="2.6" fill="var(--paper)">
-        NOW
+      <text
+        x={fa ? 960 : 40}
+        y="310"
+        textAnchor={fa ? 'end' : 'start'}
+        fontFamily={labelFont}
+        fontSize="10"
+        letterSpacing={tracking}
+        fill="var(--paper)"
+      >
+        {fa ? 'اکنون' : 'NOW'}
       </text>
-      <text x="960" y="310" textAnchor="end" fontFamily="IBM Plex Mono, monospace" fontSize="10" letterSpacing="2.6" fill="var(--paper)">
-        THE LONG RUN
+      <text
+        x={fa ? 40 : 960}
+        y="310"
+        textAnchor={fa ? 'start' : 'end'}
+        fontFamily={labelFont}
+        fontSize="10"
+        letterSpacing={tracking}
+        fill="var(--paper)"
+      >
+        {fa ? 'بلندمدت' : 'THE LONG RUN'}
       </text>
     </svg>
   )
