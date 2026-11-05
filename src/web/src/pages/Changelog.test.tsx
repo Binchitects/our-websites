@@ -46,7 +46,7 @@ describe('Changelog', () => {
 
     expect(await screen.findByText('A shorter title')).toBeInTheDocument()
     expect(screen.getByText(feed.releases[0].summary)).toBeInTheDocument()
-    expect(screen.getByText('v7.7.0')).toBeInTheDocument()
+    expect(screen.getAllByText('v7.7.0').length).toBeGreaterThan(0)
     expect(screen.getByText(/read from GitHub/i)).toBeInTheDocument()
   })
 

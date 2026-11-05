@@ -12,14 +12,14 @@ describe('Home', () => {
     )
 
     expect(
-      screen.getByRole('heading', { level: 1, name: /Your team’s AI/i }),
+      screen.getByRole('heading', { level: 1, name: /Intelligence/i }),
     ).toBeInTheDocument()
     expect(screen.getByRole('link', { name: /Deploy the stack/i })).toHaveAttribute(
       'href',
       'https://github.com/Binchitects/argus#quick-start',
     )
-    expect(screen.getByRole('heading', { name: /One platform, not five subscriptions/i })).toBeInTheDocument()
-    expect(screen.getByRole('heading', { name: /It quotes the code/i })).toBeInTheDocument()
+    expect(screen.getByRole('heading', { name: /One stack, not five subscriptions/i })).toBeInTheDocument()
+    expect(screen.getByRole('heading', { name: /It quotes the line/i })).toBeInTheDocument()
   })
 
   it('gives every page a canonical URL and a title', () => {

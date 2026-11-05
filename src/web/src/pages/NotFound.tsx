@@ -1,6 +1,6 @@
-import { ArrowLeft, Github } from 'lucide-react'
+import { ArrowLeft, ArrowUpRight } from 'lucide-react'
 import { Link } from 'react-router-dom'
-import { Orb } from '@/components/ui/Orb'
+import { EyeLine } from '@/components/ui/Eye'
 import { SITE } from '@/lib/content'
 import { useSeo } from '@/lib/seo'
 
@@ -12,40 +12,46 @@ export function NotFound() {
   })
 
   return (
-    <section className="relative overflow-hidden">
-      <div className="hero-grid pointer-events-none absolute inset-0 opacity-60" aria-hidden />
-      <div className="shell relative grid min-h-[62vh] place-items-center py-20 text-center">
+    <section className="notfound">
+      <div className="shell notfound-inner">
         <div>
-          <div className="mx-auto w-[160px]">
-            <Orb compact />
-          </div>
-          <p className="mono mt-8 text-[10px] tracking-[0.22em] text-accent uppercase">404</p>
-          <h1 className="display-2 mt-4">The eye found nothing here.</h1>
-          <p className="lead mx-auto mt-4 max-w-[44ch]">
+          <p className="notfound-code" aria-hidden>
+            404
+          </p>
+          <h1 className="mt-m">The eye found nothing here.</h1>
+          <p>
             The page may have moved, or never existed. Everything else is a step away.
           </p>
-          <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
-            <Link to="/" className="btn btn-primary">
-              <ArrowLeft size={15} aria-hidden />
+          <div className="row mt-m">
+            <Link to="/" className="btn btn-solid">
+              <ArrowLeft size={14} aria-hidden />
               Back to the start
             </Link>
-            <a
-              href={SITE.github}
-              target="_blank"
-              rel="noreferrer noopener"
-              className="btn btn-ghost"
-            >
-              <Github size={15} aria-hidden />
+            <a href={SITE.github} target="_blank" rel="noreferrer noopener" className="btn btn-outline">
               Source
+              <ArrowUpRight size={14} aria-hidden />
             </a>
           </div>
-          <div className="mono mt-10 flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-[10px] tracking-[0.1em] text-faint uppercase">
-            <Link to="/platform" className="hover:text-ink">Platform</Link>
-            <Link to="/code-arena" className="hover:text-ink">Code Arena</Link>
-            <Link to="/argus" className="hover:text-ink">Argus</Link>
-            <Link to="/security" className="hover:text-ink">Security</Link>
-            <Link to="/contact" className="hover:text-ink">Contact</Link>
+          <div className="dateline mt-l">
+            <Link to="/platform" className="text-link">
+              Platform
+            </Link>
+            <Link to="/code-arena" className="text-link">
+              Code Arena
+            </Link>
+            <Link to="/argus" className="text-link">
+              Argus
+            </Link>
+            <Link to="/security" className="text-link">
+              Security
+            </Link>
+            <Link to="/contact" className="text-link">
+              Contact
+            </Link>
           </div>
+        </div>
+        <div className="notfound-figure">
+          <EyeLine />
         </div>
       </div>
     </section>

@@ -1,20 +1,11 @@
 import { useEffect, useState } from 'react'
 import { Check, Copy } from 'lucide-react'
-import { cn } from '@/lib/cn'
 
 /**
- * A snippet with a copy button. Lines are coloured by their first characters,
- * so a shell session reads like one without a highlighter dependency.
+ * A command listing as it would be printed: a dark plate, a label, a copy
+ * button, and the words as they are typed.
  */
-export function CodeBlock({
-  code,
-  label,
-  className,
-}: {
-  code: string
-  label: string
-  className?: string
-}) {
+export function CodeBlock({ code, label, className }: { code: string; label: string; className?: string }) {
   const [copied, setCopied] = useState(false)
 
   useEffect(() => {
@@ -28,23 +19,17 @@ export function CodeBlock({
       await navigator.clipboard.writeText(code)
       setCopied(true)
     } catch {
-      // Clipboard access can be refused (an insecure origin, a browser policy).
-      // The text is selectable either way, so say nothing and leave it.
+      // The text is selectable even when the clipboard is refused.
     }
   }
 
   return (
-    <div className={cn('code-block', className)}>
-      <div className="code-block-head">
-        <span className="flex gap-1.5" aria-hidden>
-          <span className="window-dot" />
-          <span className="window-dot" />
-          <span className="window-dot" />
-        </span>
-        <span className="code-block-label ml-2">{label}</span>
+    <div className={['listing', className].filter(Boolean).join(' ')}>
+      <div className="listing-head">
+        <span>{label}</span>
         <button type="button" onClick={copy} className="copy-button" aria-label={`Copy ${label}`}>
-          {copied ? <Check size={11} aria-hidden /> : <Copy size={11} aria-hidden />}
-          {copied ? 'Copied' : 'Copy'}
+          {copied ? <Check size={10} aria-hidden /> : <Copy size={10} aria-hidden />}
+          {copied ? 'copied' : 'copy'}
         </button>
       </div>
       <pre>

@@ -5,7 +5,7 @@ A React + TypeScript front end served by an unprivileged nginx, and a .NET 10
 minimal API behind it. Two images, built from this repository, deployed together.
 
 <p align="center">
-  <img src="docs/screenshots/home-product.jpg" alt="The ARGUS home page in dark mode: the eye of Argus and a still of Arena" width="100%">
+  <img src="docs/screenshots/home-light.jpg" alt="The ARGUS home page: warm paper, Newsreader headlines, and the eye of Argus as a plate" width="100%">
 </p>
 
 ```
@@ -47,8 +47,9 @@ docker compose down -v          # stop and remove the contact-request volume
 
 | | |
 |---|---|
-| ![Home, light](docs/screenshots/home-light.jpg) | ![Security and compliance](docs/screenshots/security.jpg) |
-| ![Code Arena's IDE](docs/screenshots/code-arena-ide.jpg) | ![Contact](docs/screenshots/contact.jpg) |
+| ![Home, carbon](docs/screenshots/home-dark.jpg) | ![Argus, the inverted spread](docs/screenshots/argus.jpg) |
+| ![Code Arena's proof sheet](docs/screenshots/code-arena.jpg) | ![Security and compliance](docs/screenshots/security.jpg) |
+| ![Contact](docs/screenshots/contact.jpg) | ![Platform](docs/screenshots/platform.jpg) |
 
 ## Production: argus.binchitects.com
 
@@ -173,13 +174,19 @@ docs/DEPLOYMENT.md     DNS, TLS, backups, updates, hardening
 
 ## Design
 
-The brand comes from the product: the eye of Argus (Panoptes, the hundred-eyed
-watcher), the navy ground of Arena's own icon, and its blue-to-cyan iris
-gradient. The mark, favicon and icons are the product's own assets. Type is
-Inter and JetBrains Mono, bundled with the build. Dark is the primary face and
-light is a full peer, following the system with a remembered override and no
-flash. Every page has route-specific meta in its built HTML for crawlers and
-link previews, and a sitemap is generated at build time.
+The site is set as printed matter for a private machine: warm paper, ink rules,
+one iris blue, numbered chapters, marginal notes and figure captions. Newsreader
+carries the claims; IBM Plex Sans and Mono carry the record. There are no
+gradients, glows or glass in the interface — the only illustration is the eye of
+Argus (Panoptes, the hundred-eyed watchman), drawn in line and set as a plate.
+The favicon is the product's own.
+
+Paper is the primary face; carbon is its counterpart, following the system with
+a remembered override and no flash. Product moments are printed rather than
+screenshotted: a retrieval record with the quoted line, a proof sheet from Code
+Arena's IDE, a single-line schematic of the stack, and one inverted spread for
+Argus. Every page has route-specific meta in its built HTML for crawlers and link
+previews, and a sitemap is generated at build time.
 
 Accessibility: keyboard-first, visible focus, a skip link, labelled fields,
 error text tied with `aria-describedby`, native details for the FAQ, a

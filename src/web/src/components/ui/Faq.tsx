@@ -1,19 +1,25 @@
-import { Plus } from 'lucide-react'
 import { FAQS } from '@/lib/content'
 
-/** Native details/summary: it opens without JavaScript, prints open, and is found by in-page search. */
-export function Faq({ items = FAQS }: { items?: readonly { question: string; answer: string }[] }) {
+/** Numbered questions, ruled like a contents list. Native details: no script, prints open. */
+export function Faq({
+  items = FAQS,
+}: {
+  items?: readonly { question: string; answer: string }[]
+}) {
   return (
-    <div className="border-t border-line">
-      {items.map((item) => (
-        <details key={item.question} className="faq-item">
-          <summary className="faq-question">
-            {item.question}
-            <span className="faq-icon" aria-hidden>
-              <Plus size={13} />
+    <div className="faq">
+      {items.map((item, index) => (
+        <details key={item.question}>
+          <summary>
+            <span className="faq-num" aria-hidden>
+              {String(index + 1).padStart(2, '0')}
+            </span>
+            <span className="faq-q">{item.question}</span>
+            <span className="faq-plus" aria-hidden>
+              +
             </span>
           </summary>
-          <div className="faq-answer">{item.answer}</div>
+          <div className="faq-a">{item.answer}</div>
         </details>
       ))}
     </div>

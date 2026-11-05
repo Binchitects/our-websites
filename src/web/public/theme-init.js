@@ -3,12 +3,13 @@
 ;(function () {
   try {
     var stored = localStorage.getItem('argus-theme')
+    // Paper is the primary face: only an explicit dark preference starts dark.
     var theme =
       stored === 'light' || stored === 'dark'
         ? stored
-        : window.matchMedia('(prefers-color-scheme: light)').matches
-          ? 'light'
-          : 'dark'
+        : window.matchMedia('(prefers-color-scheme: dark)').matches
+          ? 'dark'
+          : 'light'
     document.documentElement.dataset.theme = theme
     document.documentElement.style.colorScheme = theme
   } catch (error) {

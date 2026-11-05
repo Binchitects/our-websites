@@ -9,21 +9,13 @@ import {
   Database,
   FileSearch,
   FlaskConical,
-  GitBranch,
   GitPullRequest,
-  Globe2,
   KeyRound,
-  Lock,
   MessagesSquare,
-  Network,
   Palette,
-  ScanEye,
   SearchCode,
   Server,
   ShieldCheck,
-  Sparkles,
-  Terminal,
-  Workflow,
   type LucideIcon,
 } from 'lucide-react'
 
@@ -107,55 +99,6 @@ export type Feature = {
   href?: string
   tag?: string
 }
-
-export const HOME_FEATURES: Feature[] = [
-  {
-    title: 'Chat that does the work',
-    body: 'Your models, with thinking levels, branches and files. Tools run on the server: Python in a sandbox, the web you allow, your code through Argus. Pages, diagrams and React components it writes run live beside the answer.',
-    icon: MessagesSquare,
-    href: '/platform',
-    tag: 'Arena',
-  },
-  {
-    title: 'Code Arena',
-    body: 'A coding agent with a full IDE in the browser: editor, search, git, terminals, a debugger and language servers. One file to install, kept current by your Arena.',
-    icon: Code2,
-    href: '/code-arena',
-    tag: 'Coding agent',
-  },
-  {
-    title: "Argus, your code's index",
-    body: 'Mirrors your GitLab: symbols, references, issues, wikis and documentation packs. Answers over MCP, and each developer sees exactly what their own GitLab account can read.',
-    icon: ScanEye,
-    href: '/argus',
-    tag: '34 tools',
-  },
-  {
-    title: 'Memory that lasts',
-    body: 'One memory for the chat and Code Arena. It recalls by meaning, forms memories from quiet chats, and tidies itself with undo. A project keeps its long memory in .remember/.',
-    icon: Brain,
-  },
-  {
-    title: 'Studio',
-    body: 'Pictures, edits with a brush, video, voices, music, background removal, vector art with named parts, and 3D models ready to print. Same GPUs, same rights, same budgets.',
-    icon: Palette,
-  },
-  {
-    title: 'Agents and apps',
-    body: 'Build agents that react to GitLab and act on it. Turn a chat into an app, ask questions of your databases and files, make a deck, or let a browser agent do a task while you watch.',
-    icon: Bot,
-  },
-  {
-    title: 'Meetings',
-    body: 'Record one in the browser or upload it. You get who said what, the minutes, and action items given to people and reminded on their day.',
-    icon: AudioLines,
-  },
-  {
-    title: 'Science lab',
-    body: 'Mathematics, physics, chemistry, statistics, biology and quantum computing, worked with tools that check each step: SymPy, RDKit, Biopython, Lean with Mathlib, Qiskit and more.',
-    icon: FlaskConical,
-  },
-]
 
 export const PLATFORM_GROUPS: {
   eyebrow: string
@@ -294,40 +237,6 @@ export const PLATFORM_GROUPS: {
   },
 ]
 
-export const ARGUS_TOOLS = [
-  'find_symbol',
-  'find_references',
-  'search_code',
-  'semantic_search',
-  'get_file',
-  'repo_map',
-  'system_map',
-  'dependency_path',
-  'change_impact',
-  'which_repo',
-  'impact_of',
-  'code_contracts',
-  'docs_lookup',
-  'docs_find',
-  'docs_search',
-  'docs_get',
-  'docs_verify',
-  'mr_list',
-  'mr_get',
-  'mr_diff',
-  'mr_commits',
-  'mr_discussions',
-  'ci_status',
-  'job_log',
-  'compare_refs',
-  'file_at',
-  'grep_at',
-  'issue_list',
-  'issue_get',
-  'wiki_list',
-  'wiki_get',
-] as const
-
 export const ARGUS_EVIDENCE = [
   {
     value: '0 / 18',
@@ -344,19 +253,6 @@ export const ARGUS_EVIDENCE = [
     label: 'claims wrong from memory',
     detail: 'Asked without documentation, the model was confidently wrong every time.',
   },
-] as const
-
-export const COMPLIANCE_FRAMEWORKS = [
-  'ISO 27001',
-  'ISO 42001',
-  'ISO 22301',
-  'SOC 2',
-  'PCI DSS',
-  'NIST CSF',
-  'NIST 800-53',
-  'NIST 800-171',
-  'NIST AI RMF',
-  'EU AI Act',
 ] as const
 
 export const COMPARISON = [
@@ -449,27 +345,6 @@ export const FAQS = [
 
 export const ENGINES = ['llama.cpp', 'vLLM', 'SGLang', 'Postgres', 'Traefik', 'Helm'] as const
 
-export const CAPABILITY_ICONS: { icon: LucideIcon; label: string }[] = [
-  { icon: MessagesSquare, label: 'Chat' },
-  { icon: Code2, label: 'Code Arena' },
-  { icon: ScanEye, label: 'Argus index' },
-  { icon: Palette, label: 'Studio' },
-  { icon: AudioLines, label: 'Meetings' },
-  { icon: Bot, label: 'Agents' },
-  { icon: Brain, label: 'Memory' },
-  { icon: FlaskConical, label: 'Science lab' },
-  { icon: ShieldCheck, label: 'Security reviews' },
-  { icon: ClipboardCheck, label: 'GRC' },
-  { icon: GitBranch, label: 'GitLab-native' },
-  { icon: Globe2, label: 'Air-gapped' },
-  { icon: Lock, label: 'SSO and 2FA' },
-  { icon: Network, label: 'One network' },
-  { icon: Workflow, label: 'Plans and tools' },
-  { icon: Sparkles, label: 'Live previews' },
-  { icon: Terminal, label: 'Terminals' },
-] as const
-
-/** The subjects the contact form offers; the values are the API's own keys. */
 export const CONTACT_TOPICS = [
   { value: 'walkthrough', label: 'Book a walkthrough' },
   { value: 'license', label: 'Commercial licence' },
