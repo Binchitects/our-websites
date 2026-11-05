@@ -1,8 +1,11 @@
-# The site's edge. Caddy obtains and renews the certificate and forwards every
-# request to the web image, which sets the security headers and proxies /api.
+# The edge for both sites. Caddy obtains and renews one certificate per name and
+# forwards each host to its own web image; the images set the security headers,
+# and the Argus image proxies /api.
 #
-# The domain comes from SITE_DOMAIN (docker-compose.prod.yml); the default is
-# the address this site was built for.
+# The domains come from SITE_DOMAIN and BINCHIECTS_DOMAIN
+# (docker-compose.prod.yml); the defaults are the addresses the sites were built
+# for.
+
 {$SITE_DOMAIN:argus.binchitects.com} {
 	encode zstd gzip
 	reverse_proxy web:8080
@@ -11,4 +14,18 @@
 		output stdout
 		format json
 	}
+}
+
+{$BINCHIECTS_DOMAIN:binchitects.com} {
+	encode zstd gzip
+	reverse_proxy binchitects:8080
+
+	log {
+		output stdout
+		format json
+	}
+}
+
+www.{$BINCHIECTS_DOMAIN:binchitects.com} {
+	redir https://{$BINCHIECTS_DOMAIN:binchitects.com}{uri} permanent
 }

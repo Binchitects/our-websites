@@ -1,14 +1,27 @@
-# ARGUS — argus.binchitects.com
+# Binchitects — two sites, one repository
 
-The public site for **ARGUS**: Argus Arena, Code Arena and the Argus code index.
-A React + TypeScript front end served by an unprivileged nginx, and a .NET 10
-minimal API behind it. Two images, built from this repository, deployed together.
+The public sites for **Binchitects**:
+
+- **[binchitects.com](https://binchitects.com)** — the studio: a one-page
+  statement about community, open-source development and the long run.
+- **[argus.binchitects.com](https://argus.binchitects.com)** — the product:
+  ARGUS, Argus Arena, Code Arena and the Argus code index.
+
+Both front ends are React + TypeScript + Vite, built as static files and served
+by unprivileged nginx images. Argus adds a .NET 10 minimal API behind its site.
+Three images, built from this repository, deployed together.
 
 <p align="center">
   <img src="docs/screenshots/home-light.jpg" alt="The ARGUS home page: chalk paper, the seal of Argus, and heavy Archivo headlines over the spectrum" width="100%">
 </p>
 
+<p align="center">
+  <img src="docs/screenshots/binchitects.jpg" alt="The Binchitects home page: orange braces around a heavy headline on black, with the studio statement below" width="100%">
+</p>
+
 ```
+  browser ────►  binchitects  (nginx, :8080)  ──►  static studio page
+
                 ┌──────────────────────┐        ┌──────────────────────┐
   browser ────► │ web  (nginx, :8080)  │ ─────► │ api  (.NET 10, :8080)│
                 │ React build + /api   │ proxy  │ contact, releases,   │
@@ -33,12 +46,13 @@ cp .env.example .env
 docker compose up -d --build
 ```
 
-Open <http://127.0.0.1:8080> (set `HTTP_PORT` in `.env` if that port is taken).
-The site is bound to loopback by default; put a TLS terminator in front for a
-public deployment (see below).
+Open <http://127.0.0.1:8080> for Argus and <http://127.0.0.1:8100> for the
+studio (set `HTTP_PORT` / `BINCHIECTS_HTTP_PORT` in `.env` if those ports are
+taken). Both are bound to loopback by default; put a TLS terminator in front for
+a public deployment (see below).
 
 ```bash
-docker compose logs -f          # follow both
+docker compose logs -f          # follow all three
 docker compose down             # stop
 docker compose down -v          # stop and remove the contact-request volume
 ```
@@ -51,25 +65,29 @@ docker compose down -v          # stop and remove the contact-request volume
 | ![Code Arena's proof sheet](docs/screenshots/code-arena.jpg) | ![Security and compliance](docs/screenshots/security.jpg) |
 | ![Contact](docs/screenshots/contact.jpg) | ![Platform](docs/screenshots/platform.jpg) |
 | ![The brand page](docs/screenshots/brand.jpg) | ![The seal of Argus](docs/screenshots/seal.jpg) |
+| ![The Binchitects studio page](docs/screenshots/binchitects.jpg) | ![The publisher band](docs/screenshots/publisher.jpg) |
 
 ### The publisher
 
 ![The Binchitects publisher band on the home page](docs/screenshots/publisher.jpg)
 
-Binchitects keeps a team dedicated to open-source development. The home page gives
-the publisher a full band — the name between two code braces, the statement, and
-the way into the repository, the contributing guide, the issues and the releases.
-The same story is a chapter on `/brand`; the masthead and footer carry the
-publisher's name in bold.
+Binchitects keeps a team dedicated to open-source development. The Argus home page
+gives the publisher a full band — the name between two code braces, the statement,
+and the way into the repository, the contributing guide, the issues and the
+releases. The same story is a chapter on `/brand`; the masthead and footer carry
+the publisher's name in bold. The publisher's own site takes the same voice and
+gives it a page: [binchitects.com](https://binchitects.com).
 
-## Production: argus.binchitects.com
+## Production: both domains
 
-1. **DNS** — an `A` (and `AAAA`, if you have it) record for
-   `argus.binchitects.com` pointing at the host. Ports 80 and 443 reachable.
+1. **DNS** — `A` (and `AAAA`, if you have it) records for
+   `argus.binchitects.com`, `binchitects.com` and `www.binchitects.com` pointing
+   at the host. Ports 80 and 443 reachable.
 2. **Environment** — copy `.env.example` to `.env`, set at least:
 
    ```dotenv
    SITE_DOMAIN=argus.binchitects.com
+   BINCHIECTS_DOMAIN=binchitects.com
    IP_HASH_SALT=<openssl rand -hex 32>
    ADMIN_TOKEN=<openssl rand -hex 32>          # optional, enables the CSV export
    ```
@@ -80,8 +98,9 @@ publisher's name in bold.
    docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d --build
    ```
 
-   Caddy obtains and renews the certificate for `SITE_DOMAIN` and forwards to
-   the web image. The web port stays on loopback; only 80/443 are public.
+   Caddy obtains and renews a certificate for each name and forwards it to the
+   right image; `www.binchitects.com` redirects to the apex. The web ports stay
+   on loopback; only 80/443 are public.
    See [`docs/DEPLOYMENT.md`](docs/DEPLOYMENT.md) for an existing reverse proxy,
    certificates of your own, backups and hardening.
 
@@ -93,13 +112,18 @@ Prerequisites: .NET 10 SDK, Node 22+, Docker (for images only).
 # terminal 1 — the API
 dotnet run --project src/api/Argus.Site.Api.csproj --urls http://127.0.0.1:5080
 
-# terminal 2 — the web app with hot reload
+# terminal 2 — the Argus app with hot reload
 cd src/web
 npm ci
 npm run dev            # http://127.0.0.1:5173, proxies /api to :5080
+
+# terminal 3 — the studio site
+cd src/binchitects
+npm ci
+npm run dev            # http://127.0.0.1:5174
 ```
 
-`make dev-api` and `make dev-web` do the same from the root.
+`make dev-api`, `make dev-web` and `make dev-bin` do the same from the root.
 
 The API stores contact requests under `src/api/data/` in development and at
 `/data` in the container. Change it with `Site__DataDirectory`.
@@ -108,11 +132,13 @@ The API stores contact requests under `src/api/data/` in development and at
 
 ```bash
 cd src/web && npm test          # 12 unit/component tests (Vitest + Testing Library)
+cd src/binchitects && npm test  # 4 tests for the studio page
 dotnet build                    # the API builds with zero packages
 tests/smoke/api.sh              # against a running stack (API endpoints)
 tests/smoke/web.sh              # against a running stack (static routes + proxy)
-make test                       # the first two
-make smoke                      # the last two, after `docker compose up -d`
+tests/smoke/binchitects.sh      # against a running stack (the studio site)
+make test                       # all type-checks, tests and builds
+make smoke                      # all three smoke scripts, after `docker compose up -d`
 ```
 
 The smoke scripts use `curl` only and can be pointed anywhere with `BASE_URL`.
@@ -121,16 +147,19 @@ The smoke scripts use `curl` only and can be pointed anywhere with `BASE_URL`.
 
 | Variable | Default | What it does |
 |---|---|---|
-| `SITE_DOMAIN` | `argus.binchitects.com` | Domain Caddy gets a certificate for |
-| `HTTP_BIND` | `127.0.0.1` | Address the web port is published on |
-| `HTTP_PORT` | `8080` | Published web port |
+| `SITE_DOMAIN` | `argus.binchitects.com` | Argus domain Caddy gets a certificate for |
+| `BINCHIECTS_DOMAIN` | `binchitects.com` | Studio domain Caddy gets a certificate for |
+| `HTTP_BIND` | `127.0.0.1` | Address the Argus web port is published on |
+| `HTTP_PORT` | `8080` | Published Argus web port |
+| `BINCHIECTS_HTTP_BIND` | `127.0.0.1` | Address the studio web port is published on |
+| `BINCHIECTS_HTTP_PORT` | `8100` | Published studio web port |
 | `IP_HASH_SALT` | empty | Salt for the stored hash of a request's address |
 | `ADMIN_TOKEN` | empty | Enables `GET /api/admin/leads`; empty = disabled (404) |
 | `CONTACT_WEBHOOK_URL` | empty | Optional Slack/Teams/CRM webhook for each enquiry |
 | `GITHUB_TOKEN` | empty | Lifts GitHub's anonymous rate limit on the changelog |
 | `CONTACT_PERMIT_LIMIT` | `5` | Contact requests per address per window |
 | `CONTACT_WINDOW_MINUTES` | `10` | Length of that window |
-| `IMAGE_TAG` | `local` | Tag for the two built images |
+| `IMAGE_TAG` | `local` | Tag for the three built images |
 
 All settings are standard ASP.NET configuration, so anything under `Site:` can
 also be set with `Site__Name=value` (for example `Site__ContactPermitLimit=3`).
@@ -169,7 +198,7 @@ src/
     Features/          contact, releases, admin, health endpoints
     Releases/          GitHub feed with cache and fallback
     Dockerfile
-  web/                 React 19 + TypeScript + Vite
+  web/                 Argus — React 19 + TypeScript + Vite
     src/components/    layout, UI, brand mark and seal, product plates
     src/pages/         home, platform, code arena, argus, security,
                        changelog, contact, privacy, brand, 404
@@ -177,9 +206,14 @@ src/
     public/brand/      the mark and seal as downloadable SVG
     scripts/           route-meta prerender, sitemap, robots
     Dockerfile, nginx.conf
-tests/smoke/           curl checks for a running stack
-deploy/caddy/          Caddyfile for automatic TLS
-docker-compose.yml     the two images
+  binchitects/         the studio — React 19 + TypeScript + Vite, one page
+    src/components/    wordmark, brace mark, the long horizon, UTC clock
+    src/lib/site.ts    the links between the two sites and GitHub
+    public/            favicon, app icons, social card, sitemap, robots
+    Dockerfile, nginx.conf
+tests/smoke/           curl checks for all three services
+deploy/caddy/          Caddyfile for both domains and automatic TLS
+docker-compose.yml     the three images
 docker-compose.prod.yml adds the TLS edge
 docs/DEPLOYMENT.md     DNS, TLS, backups, updates, hardening
 ```
@@ -210,6 +244,20 @@ spectrum rather than tinted a single blue. Every
 page has route-specific meta in its built HTML for crawlers and link previews,
 and a sitemap is generated at build time.
 
+## The studio site
+
+`binchitects.com` is one page, and deliberately so. It is set in black and
+red-orange: the statement held between two oversized braces, one paper spread
+for Argus, three numbered ways into the community, a long-horizon figure for
+the vision, and one orange band to close. The page is prerendered to HTML at
+build time; a live UTC clock in the dateline is the only moving part besides the
+page entrance.
+
+There are no cards, gradients or glass. The page is Archivo and IBM Plex, rules
+and numbers, and it links to the product (`argus.binchitects.com`), the source,
+the issues and the contributing guide. Everything is a static build; no API and
+no external requests.
+
 ## Brand
 
 The mark and seal are files as well as components:
@@ -218,6 +266,8 @@ The mark and seal are files as well as components:
 - [`src/web/public/brand/argus-seal.svg`](src/web/public/brand/argus-seal.svg)
 - [`src/web/public/favicon.svg`](src/web/public/favicon.svg)
 - [`src/web/public/og.png`](src/web/public/og.png)
+- [`src/binchitects/public/favicon.svg`](src/binchitects/public/favicon.svg)
+- [`src/binchitects/public/og.png`](src/binchitects/public/og.png)
 
 The publisher is **Binchitects**, which keeps a team dedicated to open-source
 development. The home page carries a full red-orange-on-black publisher band

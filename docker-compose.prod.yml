@@ -3,17 +3,21 @@ name: argus-site
 # Run together with the base file:
 #   docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d --build
 #
-# Caddy gets and renews the certificate for SITE_DOMAIN and forwards to the web
-# image. The web port stays bound to loopback from the base file, so the only
-# way in from outside is Caddy on 80 and 443.
+# Caddy gets and renews certificates for SITE_DOMAIN and BINCHIECTS_DOMAIN (and
+# redirects www to the studio apex), forwarding each host to its own web image.
+# The web ports stay bound to loopback from the base file, so the only way in
+# from outside is Caddy on 80 and 443.
 services:
   edge:
     image: caddy:2-alpine
     depends_on:
       web:
         condition: service_healthy
+      binchitects:
+        condition: service_healthy
     environment:
       SITE_DOMAIN: ${SITE_DOMAIN:-argus.binchitects.com}
+      BINCHIECTS_DOMAIN: ${BINCHIECTS_DOMAIN:-binchitects.com}
     ports:
       - "80:80"
       - "443:443"

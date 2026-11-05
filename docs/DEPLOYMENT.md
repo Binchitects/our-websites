@@ -1,9 +1,10 @@
 # Deploying the site
 
-The site is two images with no runtime dependency: `web` (the React build served
-by unprivileged nginx, proxying `/api` to `api`) and `api` (.NET 10). This page
-covers a real deployment at `argus.binchitects.com`, backups, updates and
-hardening.
+The stack is three images with no external runtime dependency: `binchitects`
+(the studio page, static), `web` (the Argus React build served by unprivileged
+nginx, proxying `/api` to `api`) and `api` (.NET 10). This page covers a real
+deployment at `binchitects.com` and `argus.binchitects.com`, backups, updates
+and hardening.
 
 ## 1. The host
 
@@ -11,9 +12,10 @@ hardening.
 - 1 vCPU / 512 MB RAM is enough; the images are small and the API is idle.
 - Ports 80 and 443 reachable if Caddy terminates TLS. If a load balancer or an
   existing reverse proxy does, only the internal web port is needed.
-- A DNS `A` record for `argus.binchitects.com` pointing at the host (an `AAAA`
-  too if the host has IPv6). Caddy needs the record to answer the ACME
-  challenge; it cannot get a certificate for a name that does not resolve here.
+- DNS `A` records for `argus.binchitects.com`, `binchitects.com` and
+  `www.binchitects.com` pointing at the host (an `AAAA` too if the host has
+  IPv6). Caddy needs the records to answer the ACME challenges; it cannot get a
+  certificate for a name that does not resolve here.
 
 ## 2. First deploy with automatic TLS
 
@@ -26,6 +28,7 @@ Edit `.env`:
 
 ```dotenv
 SITE_DOMAIN=argus.binchitects.com
+BINCHIECTS_DOMAIN=binchitects.com
 IP_HASH_SALT=<openssl rand -hex 32>
 ADMIN_TOKEN=<openssl rand -hex 32>
 CONTACT_WEBHOOK_URL=            # optional
@@ -38,27 +41,30 @@ Then:
 docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d --build
 docker compose ps
 curl -fsS https://argus.binchitects.com/api/health
+curl -fsS https://binchitects.com/ | head -5
 ```
 
 Caddy stores certificates in the `caddy-data` volume. Keep it: removing it makes
 Caddy ask Let's Encrypt again, and there are rate limits.
 
 **TLS somewhere else instead.** Skip `docker-compose.prod.yml` and point your own
-terminator at `127.0.0.1:8080` (or set `HTTP_BIND=0.0.0.0` on a trusted
-network). The web image already sends `X-Forwarded-Proto` to the API and trusts
-forwarded headers only from private networks, so keep the API unpublished.
+terminator at `127.0.0.1:8080` for Argus and `127.0.0.1:8100` for the studio (or
+set the `*_HTTP_BIND` values to `0.0.0.0` on a trusted network). The Argus image
+already sends `X-Forwarded-Proto` to the API and trusts forwarded headers only
+from private networks, so keep the API unpublished.
 
 ## 3. What runs
 
 | Container | User | Port | Writes | Health |
 |---|---|---|---|---|
+| `argus-site-binchitects-1` | `nginx` (uid 100) | 8080 | `/tmp` only | `GET /healthz` |
 | `argus-site-web-1` | `nginx` (uid 100) | 8080 | `/tmp` only | `GET /healthz` |
 | `argus-site-api-1` | `10001:10001` | 8080, internal | `/data` volume | `GET /healthz` |
 | `argus-site-edge-1` (prod) | image default | 80, 443 | Caddy volumes | Caddy's own |
 
-Both app containers run read-only roots with all Linux capabilities dropped and
-`no-new-privileges`. The API is never published; only the web port (loopback by
-default) and, with the prod file, 80/443.
+All three app containers run read-only roots with all Linux capabilities dropped
+and `no-new-privileges`. The API is never published; only the two web ports
+(loopback by default) and, with the prod file, 80/443.
 
 ## 4. Data
 
@@ -112,9 +118,12 @@ data file is forward compatible by design.
 
 | Variable | Default | Notes |
 |---|---|---|
-| `SITE_DOMAIN` | `argus.binchitects.com` | Used by the Caddyfile |
+| `SITE_DOMAIN` | `argus.binchitects.com` | Argus host in the Caddyfile |
+| `BINCHIECTS_DOMAIN` | `binchitects.com` | Studio host in the Caddyfile; `www` redirects here |
 | `HTTP_BIND` | `127.0.0.1` | Set to `0.0.0.0` only behind a trusted network |
-| `HTTP_PORT` | `8080` | Host port for the web image |
+| `HTTP_PORT` | `8080` | Host port for the Argus web image |
+| `BINCHIECTS_HTTP_BIND` | `127.0.0.1` | As above, for the studio image |
+| `BINCHIECTS_HTTP_PORT` | `8100` | Host port for the studio image |
 | `IP_HASH_SALT` | empty | Set it; makes stored hashes non-linkable outside this deployment |
 | `ADMIN_TOKEN` | empty | Enables the CSV export; empty disables it |
 | `CONTACT_WEBHOOK_URL` | empty | JSON POST per enquiry, 5 s timeout, failures only logged |
@@ -128,10 +137,10 @@ Anything else under ASP.NET's `Site:` section can be set with
 
 ## 7. Security notes
 
-- **CSP** is set by nginx (`src/web/nginx.conf`). Scripts come only from this
-  origin; the theme script is a file for that reason. Styles allow inline
-  because React sets style attributes. No frames, no objects, forms only to
-  this origin.
+- **CSP** is set by both nginx images (`src/web/nginx.conf` and
+  `src/binchitects/nginx.conf`). Scripts come only from the same origin; the
+  theme script is a file for that reason. Styles allow inline because React sets
+  style attributes. No frames, no objects, forms only to the same origin.
 - **Forwarded headers** are accepted only from private networks, so a direct
   request to the API cannot spoof an address for the rate limiter.
 - **Rate limiting** is a fixed window per address on `POST /api/contact`.
@@ -153,6 +162,10 @@ Anything else under ASP.NET's `Site:` section can be set with
 **`502 Bad Gateway` on `/api/...`** — the API is not up or not healthy:
 `docker compose ps`, `docker compose logs api`. The web image resolves it by the
 service name `api`; keep both on the `internal` network.
+
+**`502` on `binchitects.com`** — the studio image is not healthy. Check
+`docker compose ps binchitects` and `docker compose logs binchitects`. Caddy
+resolves it by the service name `binchitects`.
 
 **The API exits with a permissions error on `/data`** — a bind mount was used
 without matching ownership. The named volume initialises itself; for a bind

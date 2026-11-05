@@ -29,6 +29,7 @@ export const SITE = {
     'Argus Arena is the self-hosted AI platform: chat, Code Arena, a code index, studio, meetings, agents and compliance evidence, on your GPUs inside your network.',
   github: 'https://github.com/Binchitects/argus',
   org: 'https://github.com/Binchitects',
+  studio: 'https://binchitects.com',
   issues: 'https://github.com/Binchitects/argus/issues',
   releases: 'https://github.com/Binchitects/argus/releases',
   changelog: 'https://github.com/Binchitects/argus/blob/main/CHANGELOG.md',
@@ -85,7 +86,7 @@ export const FOOTER_COLUMNS = [
   {
     title: 'Company',
     links: [
-      { label: 'Binchitects', href: SITE.org, external: true },
+      { label: 'Binchitects', href: SITE.studio, external: true },
       { label: 'Brand', href: '/brand' },
       { label: 'Contributing', href: SITE.contributing, external: true },
       { label: 'Talk to us', href: '/contact' },
