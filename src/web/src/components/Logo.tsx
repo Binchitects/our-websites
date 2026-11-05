@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom'
-import { EyeMark } from '@/components/ui/Eye'
+import { ArgusMark } from '@/components/brand/ArgusMark'
 import { cn } from '@/lib/cn'
 
 /**
@@ -9,12 +9,12 @@ import { cn } from '@/lib/cn'
 export function Logo({ className }: { className?: string }) {
   return (
     <Link to="/" className={cn('brand', className)} aria-label="Argus Arena — home">
-      <EyeMark className="brand-mark" />
+      <ArgusMark className="brand-mark" />
       <span className="brand-text">
         <span className="brand-name">
-          Argus<span className="period">.</span>
+          Argus Arena<span className="period">.</span>
         </span>
-        <span className="brand-sub">Arena by Binchitects</span>
+        <span className="brand-sub">Binchitects</span>
       </span>
     </Link>
   )

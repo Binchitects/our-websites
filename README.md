@@ -5,7 +5,7 @@ A React + TypeScript front end served by an unprivileged nginx, and a .NET 10
 minimal API behind it. Two images, built from this repository, deployed together.
 
 <p align="center">
-  <img src="docs/screenshots/home-light.jpg" alt="The ARGUS home page: warm paper, Newsreader headlines, and the eye of Argus as a plate" width="100%">
+  <img src="docs/screenshots/home-light.jpg" alt="The ARGUS home page: warm paper, the seal of Argus, and Newsreader headlines" width="100%">
 </p>
 
 ```
@@ -47,9 +47,10 @@ docker compose down -v          # stop and remove the contact-request volume
 
 | | |
 |---|---|
-| ![Home, carbon](docs/screenshots/home-dark.jpg) | ![Argus, the inverted spread](docs/screenshots/argus.jpg) |
+| ![Home, carbon](docs/screenshots/home-dark.jpg) | ![Argus, the index chart](docs/screenshots/argus.jpg) |
 | ![Code Arena's proof sheet](docs/screenshots/code-arena.jpg) | ![Security and compliance](docs/screenshots/security.jpg) |
 | ![Contact](docs/screenshots/contact.jpg) | ![Platform](docs/screenshots/platform.jpg) |
+| ![The brand page](docs/screenshots/brand.jpg) | ![The seal of Argus](docs/screenshots/seal.jpg) |
 
 ## Production: argus.binchitects.com
 
@@ -158,11 +159,12 @@ src/
     Features/          contact, releases, admin, health endpoints
     Releases/          GitHub feed with cache and fallback
     Dockerfile
-  web/                 React 19 + TypeScript + Vite + Tailwind
-    src/components/    layout, UI primitives, product mocks
+  web/                 React 19 + TypeScript + Vite
+    src/components/    layout, UI, brand mark and seal, product plates
     src/pages/         home, platform, code arena, argus, security,
-                       changelog, contact, privacy, 404
+                       changelog, contact, privacy, brand, 404
     src/lib/           content, SEO, helpers
+    public/brand/      the mark and seal as downloadable SVG
     scripts/           route-meta prerender, sitemap, robots
     Dockerfile, nginx.conf
 tests/smoke/           curl checks for a running stack
@@ -177,16 +179,31 @@ docs/DEPLOYMENT.md     DNS, TLS, backups, updates, hardening
 The site is set as printed matter for a private machine: warm paper, ink rules,
 one iris blue, numbered chapters, marginal notes and figure captions. Newsreader
 carries the claims; IBM Plex Sans and Mono carry the record. There are no
-gradients, glows or glass in the interface — the only illustration is the eye of
-Argus (Panoptes, the hundred-eyed watchman), drawn in line and set as a plate.
-The favicon is the product's own.
+gradients, glows or glass in the interface.
 
-Paper is the primary face; carbon is its counterpart, following the system with
-a remembered override and no flash. Product moments are printed rather than
-screenshotted: a retrieval record with the quoted line, a proof sheet from Code
-Arena's IDE, a single-line schematic of the stack, and one inverted spread for
-Argus. Every page has route-specific meta in its built HTML for crawlers and link
-previews, and a sitemap is generated at build time.
+The identity is drawn, not traced. The **mark** is a roundel — an ink disc, a
+paper eye, one blue iris and a dial of ticks — so it holds at 16px and at two
+metres. The **seal** is the site's large illustration: a 180-tick dial, a lens
+diaphragm, and an iris cut in 150 radial lines. The favicon, app icons and
+social image are generated from the mark and seal.
+
+Product moments are printed rather than screenshotted: a radial index chart of
+the Argus tools, a system-section schematic of the stack, a proof sheet from
+Code Arena's IDE, the agent's trace, and one inverted spread for Argus. Every
+page has route-specific meta in its built HTML for crawlers and link previews,
+and a sitemap is generated at build time.
+
+## Brand
+
+The mark and seal are files as well as components:
+
+- [`src/web/public/brand/argus-mark.svg`](src/web/public/brand/argus-mark.svg)
+- [`src/web/public/brand/argus-seal.svg`](src/web/public/brand/argus-seal.svg)
+- [`src/web/public/favicon.svg`](src/web/public/favicon.svg)
+- [`src/web/public/og.png`](src/web/public/og.png)
+
+`/brand` on the site is the specimen page: sizes, the seal, the lockup, the
+palette and the usage rules.
 
 Accessibility: keyboard-first, visible focus, a skip link, labelled fields,
 error text tied with `aria-describedby`, native details for the FAQ, a

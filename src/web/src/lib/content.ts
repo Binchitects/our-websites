@@ -85,6 +85,7 @@ export const FOOTER_COLUMNS = [
     title: 'Company',
     links: [
       { label: 'Binchitects', href: SITE.org, external: true },
+      { label: 'Brand', href: '/brand' },
       { label: 'Talk to us', href: '/contact' },
       { label: 'Issues', href: SITE.issues, external: true },
       { label: 'Releases', href: SITE.releases, external: true },

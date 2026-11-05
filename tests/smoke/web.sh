@@ -34,6 +34,7 @@ check_route "/security" "Security"
 check_route "/changelog" "Changelog"
 check_route "/contact" "Talk to us"
 check_route "/privacy" "Privacy"
+check_route "/brand" "Brand"
 
 fetch "$BASE_URL/"
 for header in content-security-policy x-content-type-options referrer-policy permissions-policy; do

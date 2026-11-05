@@ -1,6 +1,6 @@
 import { ArrowDown, ArrowRight, ArrowUpRight } from 'lucide-react'
 import { Link } from 'react-router-dom'
-import { EyeFigure } from '@/components/ui/Eye'
+import { ArgusSealFigure } from '@/components/brand/ArgusSeal'
 import { SITE } from '@/lib/content'
 
 /** The opening spread: the claim, the standfirst, and the instrument itself. */
@@ -53,7 +53,7 @@ export function Hero() {
             </div>
           </div>
 
-          <EyeFigure />
+          <ArgusSealFigure />
         </div>
 
         <div className="hero-foot">

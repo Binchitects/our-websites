@@ -1,5 +1,6 @@
 import { ArrowRight, ArrowUpRight } from 'lucide-react'
 import { Link } from 'react-router-dom'
+import { AgentTrace } from '@/components/product/AgentTrace'
 import { CodeArenaPlate } from '@/components/product/CodeArenaPlate'
 import { ArticleOpener } from '@/components/ui/ArticleOpener'
 import { Chapter, ChapterHead } from '@/components/ui/Chapter'
@@ -148,7 +149,14 @@ export function CodeArena() {
           standfirst="Long work does not go straight to an edit. The agent writes a plan, you approve it, and each step is grounded in the code and done only once its check passes."
         />
 
-        <div className="spread spread-start">
+        <Plate
+          figure="FIG. 05"
+          caption="The trace of one session: a plan you approve, each step grounded in the code, a check that must pass, and a repair path if it does not. A step can be undone."
+        >
+          <AgentTrace />
+        </Plate>
+
+        <div className="spread spread-start mt-l">
           <div className="runbook">
             {plan.map(([title, body], index) => (
               <div key={title} className="runbook-step">

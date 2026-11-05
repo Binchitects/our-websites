@@ -1,7 +1,9 @@
+import { RetrievalPlate } from '@/components/product/RetrievalPlate'
 import { ArticleOpener } from '@/components/ui/ArticleOpener'
 import { Chapter, ChapterHead } from '@/components/ui/Chapter'
 import { CtaBand } from '@/components/ui/CtaBand'
 import { IndexList } from '@/components/ui/IndexList'
+import { Plate } from '@/components/ui/Plate'
 import { ARGUS_EVIDENCE, SITE } from '@/lib/content'
 import { routeMeta } from '@/lib/route-meta'
 import { useSeo } from '@/lib/seo'
@@ -198,6 +200,15 @@ export function ArgusPage() {
               </div>
             ))}
           </div>
+        </div>
+
+        <div className="mt-l">
+          <Plate
+            figure="FIG. 06"
+            caption="The same question through the index: the calls, the quoted line, and the caller's own rights. Nothing is answered from memory."
+          >
+            <RetrievalPlate />
+          </Plate>
         </div>
       </Chapter>
 

@@ -1,6 +1,6 @@
 import { ArrowRight } from 'lucide-react'
 import { Link } from 'react-router-dom'
-import { RetrievalPlate } from '@/components/product/RetrievalPlate'
+import { IndexChart } from '@/components/product/IndexChart'
 import { Chapter, ChapterHead } from '@/components/ui/Chapter'
 import { Plate } from '@/components/ui/Plate'
 import { ARGUS_EVIDENCE } from '@/lib/content'
@@ -79,39 +79,48 @@ export function ArgusChapter() {
         }
       />
 
-      <div className="spread spread-reverse spread-start">
-        <div className="spread-figure">
-          <Plate
-            figure="FIG. 04"
-            caption="A question, the calls that answered it, and the line it came from. The model is handed the source; it does not recall it."
-          >
-            <RetrievalPlate />
-          </Plate>
-        </div>
+      <Plate
+        figure="FIG. 04"
+        caption="The index, in one view: three orbits of tools around one eye. Filled nodes quote the source; open nodes read the record. Every answer is scoped to the caller."
+      >
+        <IndexChart />
+      </Plate>
 
+      <div className="spread spread-start mt-l">
         <div>
           <p className="body" style={{ color: 'var(--ink-2)' }}>
             Argus mirrors your repositories and serves them over MCP: symbols, references, merge
             requests, CI logs, issues, wikis and documentation packs. Each answer is scoped to what
             the caller&rsquo;s own GitLab account can read, in SQL — not in a prompt.
           </p>
-
-          <div className="evidence-row mt-m">
-            {ARGUS_EVIDENCE.map((item) => (
-              <div key={item.label} className="evidence">
-                <p className="evidence-value">{item.value}</p>
-                <p className="evidence-label">{item.label}</p>
-              </div>
-            ))}
-          </div>
-
-          <p className="note" style={{ borderTop: 0, paddingTop: 0 }}>
-            Argus&rsquo;s own measurements, in its server instructions: across five real driver files
-            and eighteen contract claims. The point is not that the model is bad — it is that the
-            index can be right.
+          <p className="body" style={{ color: 'var(--ink-2)' }}>
+            The model is handed the facts, verbatim. Header names, flags and error codes stop being
+            a test of memory and become a citation.
           </p>
         </div>
+        <div>
+          <figure className="quote">
+            <blockquote>
+              A hundred eyes, one index. The point is not that the model is bad — it is that the
+              index can be right.
+            </blockquote>
+            <figcaption>— Argus, measured across five driver files</figcaption>
+          </figure>
+        </div>
       </div>
+
+      <div className="evidence-row mt-l">
+        {ARGUS_EVIDENCE.map((item) => (
+          <div key={item.label} className="evidence">
+            <p className="evidence-value">{item.value}</p>
+            <p className="evidence-label">{item.label}</p>
+          </div>
+        ))}
+      </div>
+      <p className="note" style={{ borderTop: 0 }}>
+        Across five real driver files and eighteen contract claims: claims from memory were wrong
+        every time, paraphrased claims a third of the time, and quoted claims not once.
+      </p>
 
       <div className="mt-xl">
         <div className="subhead">

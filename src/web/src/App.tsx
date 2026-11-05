@@ -8,6 +8,7 @@ import { Security } from '@/pages/Security'
 import { Changelog } from '@/pages/Changelog'
 import { Contact } from '@/pages/Contact'
 import { Privacy } from '@/pages/Privacy'
+import { Brand } from '@/pages/Brand'
 import { NotFound } from '@/pages/NotFound'
 
 export function App() {
@@ -22,6 +23,7 @@ export function App() {
         <Route path="changelog" element={<Changelog />} />
         <Route path="contact" element={<Contact />} />
         <Route path="privacy" element={<Privacy />} />
+        <Route path="brand" element={<Brand />} />
         <Route path="*" element={<NotFound />} />
       </Route>
     </Routes>
