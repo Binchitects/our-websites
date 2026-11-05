@@ -1,0 +1,42 @@
+[
+  {
+    "path": "/",
+    "title": "ARGUS — your team’s private AI, on your hardware",
+    "description": "Argus Arena is the self-hosted AI platform: chat, Code Arena, a code index, studio, meetings, agents and compliance evidence, on your GPUs inside your network."
+  },
+  {
+    "path": "/platform",
+    "title": "Platform — one self-hosted AI stack for the whole team | ARGUS",
+    "description": "The chat, Code Arena, the Argus code index, studio, meetings, agents, security reviews and GRC, on your own GPUs with one sign-in and one budget for each person."
+  },
+  {
+    "path": "/code-arena",
+    "title": "Code Arena — a coding agent with its own IDE, self-hosted | ARGUS",
+    "description": "Code Arena is our own coding agent with a full IDE in the browser: editor, search, git, terminals, a debugger and a code index. One file, offline, kept current by your Arena."
+  },
+  {
+    "path": "/argus",
+    "title": "Argus — the code index that answers with the line | ARGUS",
+    "description": "Argus mirrors your GitLab and answers over MCP: symbols, references, merge requests, issues, wikis and documentation packs, with each person seeing only what their own GitLab account can read."
+  },
+  {
+    "path": "/security",
+    "title": "Security and compliance — evidence you can hand over | ARGUS",
+    "description": "SSO, LDAP and 2FA, per-person rights enforced in SQL, network allow lists, a tamper-evident audit log and fourteen compliance frameworks mapped clause by clause with live control checks."
+  },
+  {
+    "path": "/changelog",
+    "title": "Changelog — what changed in ARGUS",
+    "description": "Release notes for Argus Arena, Code Arena and Argus, read from the project’s GitHub releases and kept on this page."
+  },
+  {
+    "path": "/contact",
+    "title": "Talk to us — ARGUS",
+    "description": "Ask about a self-hosted ARGUS deployment, a commercial licence, a security review or a walkthrough of Argus Arena and Code Arena."
+  },
+  {
+    "path": "/privacy",
+    "title": "Privacy — how this site handles your message | ARGUS",
+    "description": "What this site collects when you use the contact form, why, how long it is kept, and how to have it removed. No analytics, no advertising cookies, no third-party fonts."
+  }
+]

@@ -1,0 +1,14 @@
+# The site's edge. Caddy obtains and renews the certificate and forwards every
+# request to the web image, which sets the security headers and proxies /api.
+#
+# The domain comes from SITE_DOMAIN (docker-compose.prod.yml); the default is
+# the address this site was built for.
+{$SITE_DOMAIN:argus.binchitects.com} {
+	encode zstd gzip
+	reverse_proxy web:8080
+
+	log {
+		output stdout
+		format json
+	}
+}

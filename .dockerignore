@@ -1,0 +1,14 @@
+.git
+.github
+.gitignore
+**/node_modules
+**/dist
+**/bin
+**/obj
+**/*.user
+.env
+deploy/caddy
+docs
+tests
+README.md
+*.md

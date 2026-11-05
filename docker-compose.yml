@@ -1,0 +1,73 @@
+name: argus-site
+
+# Two images, one stack: the React app served by an unprivileged nginx, and the
+# .NET API behind it. Only the web image is published, and only to loopback by
+# default; a TLS terminator (see docker-compose.prod.yml) is the way in.
+services:
+  api:
+    image: argus-site-api:${IMAGE_TAG:-local}
+    build:
+      context: .
+      dockerfile: src/api/Dockerfile
+    environment:
+      ASPNETCORE_HTTP_PORTS: "8080"
+      ASPNETCORE_ENVIRONMENT: Production
+      Site__DataDirectory: /data
+      Site__ContactPermitLimit: ${CONTACT_PERMIT_LIMIT:-5}
+      Site__ContactWindowMinutes: ${CONTACT_WINDOW_MINUTES:-10}
+      Site__IpHashSalt: ${IP_HASH_SALT:-}
+      Site__AdminToken: ${ADMIN_TOKEN:-}
+      Site__ContactWebhookUrl: ${CONTACT_WEBHOOK_URL:-}
+      Site__GitHubToken: ${GITHUB_TOKEN:-}
+    volumes:
+      - site-data:/data
+    restart: unless-stopped
+    read_only: true
+    tmpfs:
+      - /tmp:size=16m,mode=1777
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    networks:
+      - internal
+    healthcheck:
+      test: ["CMD", "dotnet", "Argus.Site.Api.dll", "--healthcheck"]
+      interval: 15s
+      timeout: 3s
+      start_period: 10s
+      retries: 3
+
+  web:
+    image: argus-site-web:${IMAGE_TAG:-local}
+    build:
+      context: .
+      dockerfile: src/web/Dockerfile
+    depends_on:
+      api:
+        condition: service_healthy
+    ports:
+      - "${HTTP_BIND:-127.0.0.1}:${HTTP_PORT:-8080}:8080"
+    restart: unless-stopped
+    read_only: true
+    tmpfs:
+      - /tmp:size=32m,mode=1777
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    networks:
+      - internal
+    healthcheck:
+      test: ["CMD", "wget", "-qO", "/dev/null", "http://127.0.0.1:8080/healthz"]
+      interval: 15s
+      timeout: 3s
+      start_period: 5s
+      retries: 3
+
+volumes:
+  site-data:
+
+networks:
+  internal:
+    driver: bridge
