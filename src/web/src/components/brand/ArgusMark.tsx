@@ -2,9 +2,10 @@ import { useId } from 'react'
 
 /**
  * The Argus mark: a roundel with the eye in it. A filled disc, a bone sclera,
- * one iris-blue iris, and a dial of ticks around the rim. The disc is the page's
- * ink and the eye is its paper, so the mark flips with the theme; the iris stays
- * blue. It is drawn rather than traced, so it stays crisp at 16px and at 2m.
+ * one iris-blue iris, and a dial of ticks around the rim. Six major ticks carry
+ * the Argus spectrum, so the mark has colour without a second shape. The disc is
+ * the page's ink and the eye is its paper, so the mark flips with the theme; the
+ * iris stays blue. Drawn rather than traced, it stays crisp at 16px and at 2m.
  */
 export function ArgusMark({
   className,
@@ -14,10 +15,12 @@ export function ArgusMark({
   label?: string
 }) {
   const id = useId().replace(/:/g, '')
+  const bands = ['--c-iris', '--c-cyan', '--c-teal', '--c-violet', '--c-amber', '--c-rose']
   const ticks = Array.from({ length: 24 }, (_, index) => {
     const angle = (index * 15 * Math.PI) / 180
-    const inner = index % 6 === 0 ? 24.4 : 25.4
-    const outer = 27.2
+    const major = index % 6 === 0
+    const inner = major ? 23.8 : 25.4
+    const outer = 27.4
     return (
       <line
         key={index}
@@ -25,9 +28,9 @@ export function ArgusMark({
         y1={32 + inner * Math.sin(angle)}
         x2={32 + outer * Math.cos(angle)}
         y2={32 + outer * Math.sin(angle)}
-        stroke="var(--paper)"
-        strokeWidth={index % 6 === 0 ? 0.7 : 0.45}
-        opacity={index % 6 === 0 ? 0.6 : 0.35}
+        stroke={major ? `var(${bands[(index / 6) % bands.length]})` : 'var(--paper)'}
+        strokeWidth={major ? 1.1 : 0.45}
+        opacity={major ? 1 : 0.35}
       />
     )
   })

@@ -5,7 +5,7 @@ A React + TypeScript front end served by an unprivileged nginx, and a .NET 10
 minimal API behind it. Two images, built from this repository, deployed together.
 
 <p align="center">
-  <img src="docs/screenshots/home-light.jpg" alt="The ARGUS home page: warm paper, the seal of Argus, and Newsreader headlines" width="100%">
+  <img src="docs/screenshots/home-light.jpg" alt="The ARGUS home page: chalk paper, the seal of Argus, and heavy Archivo headlines over the spectrum" width="100%">
 </p>
 
 ```
@@ -47,7 +47,7 @@ docker compose down -v          # stop and remove the contact-request volume
 
 | | |
 |---|---|
-| ![Home, carbon](docs/screenshots/home-dark.jpg) | ![Argus, the index chart](docs/screenshots/argus.jpg) |
+| ![Home, carbon](docs/screenshots/home-dark.jpg) | ![Argus, the code index](docs/screenshots/argus.jpg) |
 | ![Code Arena's proof sheet](docs/screenshots/code-arena.jpg) | ![Security and compliance](docs/screenshots/security.jpg) |
 | ![Contact](docs/screenshots/contact.jpg) | ![Platform](docs/screenshots/platform.jpg) |
 | ![The brand page](docs/screenshots/brand.jpg) | ![The seal of Argus](docs/screenshots/seal.jpg) |
@@ -186,20 +186,27 @@ docs/DEPLOYMENT.md     DNS, TLS, backups, updates, hardening
 
 ## Design
 
-The site is set as printed matter for a private machine: warm paper, ink rules,
-one iris blue, numbered chapters, marginal notes and figure captions. Newsreader
-carries the claims; IBM Plex Sans and Mono carry the record. There are no
-gradients, glows or glass in the interface.
+The site is set as printed matter for a private machine: cool chalk paper, ink
+rules, numbered chapters, marginal notes and figure captions. Archivo carries
+the claims in a tight, heavy grotesque; IBM Plex Sans and Mono carry the record.
+There are no gradients, glows or glass in the interface.
+
+The identity is deliberately two-sided. **Argus** is the colourful half: a
+six-band spectrum (iris, cyan, teal, violet, amber, rose) used as working
+notation in the index, the trace and the system plate. **Binchitects** is the
+publisher half: red-orange on black, stamped into the page.
 
 The identity is drawn, not traced. The **mark** is a roundel — an ink disc, a
-paper eye, one blue iris and a dial of ticks — so it holds at 16px and at two
-metres. The **seal** is the site's large illustration: a 180-tick dial, a lens
+paper eye, one blue iris and a dial whose six major ticks carry the spectrum —
+so it holds at 16px and at two metres. The **seal** is the site's large
+illustration: a 180-tick dial with its twelve majors in spectrum, a lens
 diaphragm, and an iris cut in 150 radial lines. The favicon, app icons and
 social image are generated from the mark and seal.
 
 Product moments are printed rather than screenshotted: a radial index chart of
 the Argus tools, a system-section schematic of the stack, a proof sheet from
-Code Arena's IDE, the agent's trace, and one inverted spread for Argus. Every
+Code Arena's IDE, and the agent's trace — each of them colour-coded by the
+spectrum rather than tinted a single blue. Every
 page has route-specific meta in its built HTML for crawlers and link previews,
 and a sitemap is generated at build time.
 
@@ -213,9 +220,10 @@ The mark and seal are files as well as components:
 - [`src/web/public/og.png`](src/web/public/og.png)
 
 The publisher is **Binchitects**, which keeps a team dedicated to open-source
-development. The home page carries a full publisher band with the wordmark held
-between two code braces and the way into the repository, the contributing guide
-and the issues; `/brand` has a publisher chapter alongside the identity.
+development. The home page carries a full red-orange-on-black publisher band
+with the wordmark held between two code braces and the way into the repository,
+the contributing guide and the issues; `/brand` repeats it as a black card
+inside the publisher chapter, beside the identity.
 
 `/brand` on the site is the specimen page: sizes, the seal, the lockup, the
 palette and the usage rules.

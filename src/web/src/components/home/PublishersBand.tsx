@@ -29,7 +29,7 @@ export function PublishersBand() {
         <div className="publisher-grid">
           <div>
             <p className="publisher-lead">
-              Binchitects keeps a team dedicated to open-source development.
+              Binchitects keeps a team dedicated to <span className="signal">open-source</span> development.
             </p>
             <p className="body">
               Argus Arena is built in public: the source, the issues, the manual, the release notes

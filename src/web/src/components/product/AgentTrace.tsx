@@ -1,19 +1,45 @@
+import { useId } from 'react'
+
 /**
- * The agent's trace: plan, ground, check, repair, carry. A solid path for the
- * happy route and a dashed return for a failed check.
+ * The agent's trace: plan, ground, check, repair, carry. Each stop is one band
+ * of the Argus spectrum, so the trace reads as a colour sequence rather than a
+ * row of identical dots; a failed check returns in rose.
  */
+const STEPS = [
+  { x: 70, num: '01', title: 'Plan', note: 'steps, files, checks', colour: 'var(--c-iris)' },
+  { x: 250, num: '02', title: 'Ground', note: 'read before edit', colour: 'var(--c-cyan)' },
+  { x: 430, num: '03', title: 'Check', note: 'the named test', colour: 'var(--c-teal)' },
+  { x: 610, num: '04', title: 'Repair', note: 'only if it fails', colour: 'var(--c-violet)' },
+  { x: 790, num: '05', title: 'Carry', note: 'into the next session', colour: 'var(--c-amber)' },
+]
+
 export function AgentTrace({ className }: { className?: string }) {
+  const id = useId().replace(/:/g, '')
+  const trail = `trace-line-${id}`
+  const arrow = `trace-arrow-${id}`
+  const arrowFail = `trace-arrow-fail-${id}`
+
   return (
     <svg
       viewBox="0 0 900 272"
       className={['trace', className].filter(Boolean).join(' ')}
       role="img"
-      aria-label="The agent's trace: plan, ground, check, repair and carry. A failed check returns to grounding."
+      aria-label="The agent's trace: plan, ground, check, repair and carry, each in its own colour. A failed check returns to grounding."
       xmlns="http://www.w3.org/2000/svg"
     >
       <defs>
-        <marker id="trace-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
-          <path d="M 0 0 L 10 5 L 0 10 z" fill="var(--iris)" />
+        <linearGradient id={trail} x1="70" y1="0" x2="790" y2="0" gradientUnits="userSpaceOnUse">
+          <stop offset="0" stopColor="var(--c-iris)" />
+          <stop offset="0.25" stopColor="var(--c-cyan)" />
+          <stop offset="0.5" stopColor="var(--c-teal)" />
+          <stop offset="0.75" stopColor="var(--c-violet)" />
+          <stop offset="1" stopColor="var(--c-amber)" />
+        </linearGradient>
+        <marker id={arrow} viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+          <path d="M 0 0 L 10 5 L 0 10 z" fill="var(--c-amber)" />
+        </marker>
+        <marker id={arrowFail} viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+          <path d="M 0 0 L 10 5 L 0 10 z" fill="var(--c-rose)" />
         </marker>
       </defs>
 
@@ -26,33 +52,27 @@ export function AgentTrace({ className }: { className?: string }) {
 
       <line x1="20" y1="252" x2="880" y2="252" stroke="var(--ink)" strokeWidth="0.5" opacity="0.2" />
 
-      {/* The happy path. */}
-      <line x1="70" y1="118" x2="790" y2="118" stroke="var(--iris)" strokeWidth="1.2" markerEnd="url(#trace-arrow)" />
+      {/* The happy path, drawn in spectrum. */}
+      <line x1="70" y1="118" x2="790" y2="118" stroke={`url(#${trail})`} strokeWidth="1.6" markerEnd={`url(#${arrow})`} />
 
       {/* A failed check returns to grounding. */}
       <path
         d="M430 130 C430 200 250 200 250 130"
         fill="none"
-        stroke="var(--iris)"
-        strokeWidth="0.9"
+        stroke="var(--c-rose)"
+        strokeWidth="1"
         strokeDasharray="4 4"
-        markerEnd="url(#trace-arrow)"
+        markerEnd={`url(#${arrowFail})`}
       />
-      <text x="340" y="216" textAnchor="middle" fontFamily="IBM Plex Mono, monospace" fontSize="6.6" letterSpacing="1.2" fill="var(--muted)">
+      <text x="340" y="216" textAnchor="middle" fontFamily="IBM Plex Mono, monospace" fontSize="6.6" letterSpacing="1.2" fill="var(--c-rose)">
         CHECK FAILS · RE-GROUND
       </text>
 
-      {[
-        { x: 70, num: '01', title: 'Plan', note: 'steps, files, checks' },
-        { x: 250, num: '02', title: 'Ground', note: 'read before edit' },
-        { x: 430, num: '03', title: 'Check', note: 'the named test' },
-        { x: 610, num: '04', title: 'Repair', note: 'only if it fails' },
-        { x: 790, num: '05', title: 'Carry', note: 'into the next session' },
-      ].map((step) => (
+      {STEPS.map((step) => (
         <g key={step.num}>
-          <circle cx={step.x} cy="118" r="6" fill="var(--paper)" stroke="var(--iris)" strokeWidth="1.2" />
-          <circle cx={step.x} cy="118" r="2" fill="var(--iris)" />
-          <text x={step.x} y="82" textAnchor="middle" fontFamily="IBM Plex Mono, monospace" fontSize="7.4" letterSpacing="1.4" fill="var(--iris)">
+          <circle cx={step.x} cy="118" r="6" fill="var(--paper)" stroke={step.colour} strokeWidth="1.6" />
+          <circle cx={step.x} cy="118" r="2.2" fill={step.colour} />
+          <text x={step.x} y="82" textAnchor="middle" fontFamily="IBM Plex Mono, monospace" fontSize="7.4" letterSpacing="1.4" fill={step.colour}>
             {step.num}
           </text>
           <text x={step.x} y="102" textAnchor="middle" fontFamily="IBM Plex Sans, sans-serif" fontSize="13" fill="var(--ink)">

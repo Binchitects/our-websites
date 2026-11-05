@@ -53,8 +53,8 @@ export function CtaBand({
         </div>
         <div className="closing-figure">
           <EyeLine />
-          <p className="micro" style={{ color: 'rgba(242,239,231,0.55)', marginTop: '10px' }}>
-            Fig. 09 — the watchman
+          <p className="micro" style={{ color: 'rgba(238,241,234,0.55)', marginTop: '10px' }}>
+            Fig. 09 — the optical index
           </p>
         </div>
       </div>

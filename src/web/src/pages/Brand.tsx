@@ -11,11 +11,22 @@ import { useSeo } from '@/lib/seo'
 const sizes = [96, 56, 32, 20]
 
 const COLOURS = [
-  { name: 'Paper', hex: '#F2EFE7', ink: '#121417' },
-  { name: 'Ink', hex: '#121417', ink: '#F2EFE7' },
-  { name: 'Iris', hex: '#1646D8', ink: '#F2EFE7' },
-  { name: 'Iris deep', hex: '#0B2E9E', ink: '#F2EFE7' },
-  { name: 'Carbon', hex: '#0E0F11', ink: '#ECE8DE' },
+  { name: 'Paper', hex: '#EEF1EA', ink: '#0F1410' },
+  { name: 'Ink', hex: '#0F1410', ink: '#EEF1EA' },
+  { name: 'Iris', hex: '#1746E0', ink: '#EEF1EA' },
+  { name: 'Iris deep', hex: '#0B2E9E', ink: '#EEF1EA' },
+  { name: 'Signal', hex: '#FF3B00', ink: '#F2EDE7' },
+  { name: 'Black', hex: '#0B0B0B', ink: '#F2EDE7' },
+]
+
+/** The Argus spectrum: one band for each kind of work in the index. */
+const SPECTRUM = [
+  { name: 'Iris', hex: '#1746E0', ink: '#EEF1EA', role: 'code' },
+  { name: 'Cyan', hex: '#007F99', ink: '#EEF1EA', role: 'search' },
+  { name: 'Teal', hex: '#0B7A6A', ink: '#EEF1EA', role: 'documents' },
+  { name: 'Violet', hex: '#5B3BD6', ink: '#EEF1EA', role: 'record' },
+  { name: 'Amber', hex: '#8A5400', ink: '#EEF1EA', role: 'carry' },
+  { name: 'Rose', hex: '#B02458', ink: '#EEF1EA', role: 'failure' },
 ]
 
 /** The identity, shown as a specimen page: mark, seal, lockup, colour, files. */
@@ -33,7 +44,7 @@ export function Brand() {
             <em>the type.</em>
           </>
         }
-        standfirst="A roundel for the watchman, an engraved seal for the instrument, and one iris blue. The system is drawn in vector, so it holds at 16 pixels and at two metres."
+        standfirst="A roundel for the index, an engraved seal for the instrument, and six bands of colour around it. The system is drawn in vector, so it holds at 16 pixels and at two metres."
         actions={[
           { label: 'Download the mark', href: '/brand/argus-mark.svg', external: true, solid: true },
           { label: 'Download the seal', href: '/brand/argus-seal.svg', external: true },
@@ -44,7 +55,7 @@ export function Brand() {
             <ul className="mini-list" style={{ marginTop: '10px' }}>
               <li>The eye stays the focal point; never crop the iris.</li>
               <li>Keep clear space of one disc diameter on every side.</li>
-              <li>One iris blue. Paper and ink do the rest.</li>
+              <li>One iris for the product, six bands for the index.</li>
               <li>Use the seal as an illustration, not a favicon.</li>
             </ul>
           </>
@@ -83,7 +94,7 @@ export function Brand() {
       <Chapter number="02" label="The seal">
         <ChapterHead
           title="The instrument, engraved."
-          standfirst="The seal is the site's one large illustration: a 180-tick dial, the eye of Panoptes, and an iris cut in 150 radial lines. It is downloadable as a vector for print, slides and merchandise."
+          standfirst="The seal is the site's one large illustration: a 180-tick dial, the Argus eye, and an iris cut in 150 radial lines. It is downloadable as a vector for print, slides and merchandise."
         />
         <div className="brand-seal-wrap">
           <ArgusSeal className="brand-seal" />
@@ -92,8 +103,8 @@ export function Brand() {
 
       <Chapter number="03" label="The lockup">
         <ChapterHead
-          title="Argus Arena, set in Newsreader."
-          standfirst="The mark sits left; the wordmark is set once, with the iris-blue full stop. The letters are never re-spaced, outlined or placed on a busy photograph."
+          title="Argus Arena, set in Archivo."
+          standfirst="The mark sits left; the wordmark is set once in Archivo, with the iris-blue full stop and the publisher's red-orange tag beneath. The letters are never re-spaced, outlined or placed on a busy photograph."
         />
         <div className="brand-lockup">
           <ArgusMark className="brand-mark brand-mark-lockup" />
@@ -111,8 +122,8 @@ export function Brand() {
 
       <Chapter number="04" label="Colour">
         <ChapterHead
-          title="Paper, ink, one iris."
-          standfirst="The palette is deliberately small: warm paper, ink, and the blue that the product's iris is drawn from. Carbon is the dark counterpart, not a second palette."
+          title="A cool paper, six bands of colour."
+          standfirst="The house palette is deliberately small: chalk paper, ink, the blue of the iris, and one signal orange for the publisher's red-orange-on-black theme. The Argus spectrum adds six working colours, never used as decoration: each one marks a different kind of work."
         />
         <div className="swatches">
           {COLOURS.map((colour) => (
@@ -127,10 +138,24 @@ export function Brand() {
             </div>
           ))}
         </div>
+        <div className="swatches swatches-spectrum">
+          {SPECTRUM.map((colour) => (
+            <div key={colour.name} className="swatch">
+              <div className="swatch-colour" style={{ background: colour.hex, color: colour.ink }}>
+                <span>{colour.role}</span>
+              </div>
+              <div className="swatch-meta">
+                <strong>{colour.name}</strong>
+                <span className="mono">{colour.hex}</span>
+              </div>
+            </div>
+          ))}
+        </div>
         <p className="note mt-s">
           <strong>Contrast</strong>
-          Body text is ink on paper at 5.8:1 or better. Iris is for accents, links and the seal —
-          never for long copy on ink.
+          Body text is ink on paper at 5.8:1 or better. The spectrum is for the index, the trace
+          and the system plate, not for long copy. Signal is the publisher's colour: red-orange on
+          black, used for Binchitects and the open-source team.
         </p>
       </Chapter>
 
@@ -139,6 +164,7 @@ export function Brand() {
           title="Binchitects keeps an open-source team."
           standfirst="The publisher is not a line in the footer. Binchitects keeps a team dedicated to open-source development: the repository, the manual, the issues and the release notes are public, and the AGPL is the licence the work is offered under."
         />
+        <div className="publisher-card">
         <BinchitectsLockup className="bx-lg" />
         <div className="publisher-grid">
           <div>
@@ -164,6 +190,7 @@ export function Brand() {
             </a>
             <p className="publisher-meta">AGPL-3.0-only · source, issues and manual in public</p>
           </div>
+        </div>
         </div>
       </Chapter>
 

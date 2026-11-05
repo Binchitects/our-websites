@@ -4,6 +4,8 @@ import type { ReactNode } from 'react'
  * One numbered chapter of the report, with its number and label held in the
  * margin and a rule across the page.
  */
+const ACCENTS = ['iris', 'cyan', 'teal', 'violet', 'amber', 'rose'] as const
+
 export function Chapter({
   number,
   label,
@@ -17,8 +19,15 @@ export function Chapter({
   children: ReactNode
   className?: string
 }) {
+  const ordinal = Number.parseInt(number, 10)
+  const accent = ACCENTS[(Number.isFinite(ordinal) ? Math.max(ordinal, 1) - 1 : 0) % ACCENTS.length]
+
   return (
-    <section id={id} className={['chapter', className].filter(Boolean).join(' ')}>
+    <section
+      id={id}
+      data-accent={accent}
+      className={['chapter', className].filter(Boolean).join(' ')}
+    >
       <div className="shell chapter-grid">
         <div className="chapter-rail" aria-hidden>
           <span className="chapter-num">{number}</span>

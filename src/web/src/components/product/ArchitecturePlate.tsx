@@ -1,12 +1,19 @@
 /**
  * The stack as a system section: a dotted grid, hatched edge, numbered nodes,
- * blue request paths and a title block. It is a drawing, not a diagram of cards.
+ * spectrum-tinted services, blue request paths and a title block. It is a
+ * drawing, not a diagram of cards.
  */
 export function ArchitecturePlate() {
   const label = 'var(--muted)'
   const dim = 'var(--faint)'
   const ink = 'var(--ink)'
   const blue = 'var(--iris)'
+
+  /** Every service gets one band of the spectrum, in plate order. */
+  const tint = (num: string) => {
+    const bands = ['--c-iris', '--c-cyan', '--c-teal', '--c-violet', '--c-amber', '--c-rose']
+    return `var(${bands[(Number(num) - 1) % bands.length]})`
+  }
 
   const node = (
     x: number,
@@ -26,9 +33,10 @@ export function ArchitecturePlate() {
         width={w}
         height={h}
         fill="var(--paper-raised)"
-        stroke={emphasis ? blue : ink}
+        stroke={emphasis ? tint(num) : ink}
         strokeWidth={emphasis ? 1.4 : 1}
       />
+      <rect x={x + 0.5} y={y + 0.5} width={w - 1} height="3" fill={tint(num)} />
       <text
         x={x + w - 8}
         y={y + 13}
@@ -36,7 +44,7 @@ export function ArchitecturePlate() {
         fontFamily="IBM Plex Mono, monospace"
         fontSize="6.4"
         letterSpacing="1.1"
-        fill={blue}
+        fill={tint(num)}
       >
         {num}
       </text>
@@ -112,9 +120,14 @@ export function ArchitecturePlate() {
       <text x="32" y="38" fontFamily="IBM Plex Mono, monospace" fontSize="7.2" letterSpacing="2" fill={dim}>
         FIG. 02 / SYSTEM SECTION
       </text>
-      <text x="948" y="38" textAnchor="end" fontFamily="IBM Plex Mono, monospace" fontSize="7.2" letterSpacing="2" fill={dim}>
-        ARGUS ARENA 7.7
-      </text>
+      <g transform="translate(700 34)">
+        {['--c-iris', '--c-cyan', '--c-teal', '--c-violet', '--c-amber', '--c-rose'].map((c, i) => (
+          <rect key={c} x={i * 14} y="-6" width="9" height="4" fill={`var(${c})`} />
+        ))}
+        <text x="248" y="0" textAnchor="end" fontFamily="IBM Plex Mono, monospace" fontSize="7.2" letterSpacing="2" fill={dim}>
+          ARGUS ARENA 7.7
+        </text>
+      </g>
 
       {/* Request path labels. */}
 
@@ -127,6 +140,7 @@ export function ArchitecturePlate() {
       {/* Traefik, hatched as the edge. */}
       <rect x="220" y="144" width="140" height="92" fill="url(#arch-hatch)" stroke={ink} strokeWidth="1.7" />
       <rect x="220" y="144" width="140" height="92" fill="none" stroke={ink} strokeWidth="1.7" />
+      <rect x="220.5" y="144.5" width="139" height="3" fill="var(--c-cyan)" />
       <text x="352" y="157" textAnchor="end" fontFamily="IBM Plex Mono, monospace" fontSize="6.4" letterSpacing="1.1" fill={blue}>
         02
       </text>

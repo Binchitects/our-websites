@@ -1,6 +1,7 @@
 import { ArrowDown, ArrowRight, ArrowUpRight } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import { ArgusSealFigure } from '@/components/brand/ArgusSeal'
+import { Spectrum } from '@/components/ui/Spectrum'
 import { SITE } from '@/lib/content'
 
 /** The opening spread: the claim, the standfirst, and the instrument itself. */
@@ -16,6 +17,7 @@ export function Hero() {
           <span className="dateline-hide">Binchitects</span>
           <span className="push">v{SITE.version}</span>
         </div>
+        <Spectrum />
 
         <div className="hero-grid">
           <div>

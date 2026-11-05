@@ -3,7 +3,8 @@ import { useId } from 'react'
 /**
  * The seal of Argus: an optical instrument drawn as an engraving. A dial of
  * ticks, a line of type around the rim, a lens diaphragm, and the eye with an
- * iris cut in fine radial lines. It is the site's one large illustration.
+ * iris cut in fine radial lines. Twelve major ticks carry the Argus spectrum,
+ * so the instrument reads as a colour dial and not a monochrome one.
  */
 export function ArgusSeal({ className }: { className?: string }) {
   const id = useId().replace(/:/g, '')
@@ -12,9 +13,12 @@ export function ArgusSeal({ className }: { className?: string }) {
   const topPath = `seal-top-${id}`
   const bottomPath = `seal-bottom-${id}`
 
+  const BANDS = ['--c-iris', '--c-cyan', '--c-teal', '--c-violet', '--c-amber', '--c-rose']
+
   const dialTicks = Array.from({ length: 180 }, (_, index) => {
     const angle = (index * 2 * Math.PI) / 180
     const major = index % 15 === 0
+    const band = BANDS[(index / 15) % BANDS.length]
     const inner = major ? 288 : 294
     return (
       <line
@@ -23,9 +27,9 @@ export function ArgusSeal({ className }: { className?: string }) {
         y1={320 + inner * Math.sin(angle)}
         x2={320 + 301 * Math.cos(angle)}
         y2={320 + 301 * Math.sin(angle)}
-        stroke={major ? 'var(--iris)' : 'var(--ink)'}
-        strokeWidth={major ? 1.2 : 0.5}
-        opacity={major ? 0.9 : 0.45}
+        stroke={major ? `var(${band})` : 'var(--ink)'}
+        strokeWidth={major ? 1.7 : 0.5}
+        opacity={major ? 1 : 0.45}
       />
     )
   })
@@ -140,7 +144,7 @@ export function ArgusSeal({ className }: { className?: string }) {
         fill="var(--ink)"
       >
         <textPath href={`#${topPath}`} startOffset="50%" textAnchor="middle">
-          ARGUS ARENA · THE EYE OF PANOPTES
+          ARGUS ARENA · THE OPTICAL INDEX
         </textPath>
       </text>
       <text
@@ -150,7 +154,7 @@ export function ArgusSeal({ className }: { className?: string }) {
         fill="var(--muted)"
       >
         <textPath href={`#${bottomPath}`} startOffset="50%" textAnchor="middle">
-          SELF-HOSTED AI · BINCHIECTS · MMXXVI
+          SELF-HOSTED AI · BINCHIECTS · V7.7.0
         </textPath>
       </text>
 
@@ -229,7 +233,7 @@ export function ArgusSeal({ className }: { className?: string }) {
         A HUNDRED EYES · ONE INDEX
       </text>
       <text x="26" y="616" fontFamily="IBM Plex Mono, monospace" fontSize="7.4" letterSpacing="2.2" fill="var(--muted)">
-        PANOPTES
+        READ-ONLY
       </text>
       <text x="614" y="616" textAnchor="end" fontFamily="IBM Plex Mono, monospace" fontSize="7.4" letterSpacing="2.2" fill="var(--muted)">
         BINCHIECTS
@@ -250,7 +254,7 @@ export function ArgusSealFigure() {
       </div>
       <figcaption className="eye-caption">
         <span>FIG. 01</span>
-        <span>the seal of argus · panoptes, the watchman</span>
+        <span>the seal of argus · the optical index</span>
       </figcaption>
     </figure>
   )

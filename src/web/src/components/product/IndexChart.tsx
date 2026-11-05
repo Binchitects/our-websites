@@ -9,8 +9,9 @@ type Node = {
 
 /**
  * The index, drawn as an instrument chart: a small eye at the centre, three
- * orbits of tools, and fine radial lines. Filled nodes quote the source;
- * open nodes read the record.
+ * orbits of tools, and fine radial lines. Each orbit is one kind of work and
+ * one colour of the Argus spectrum; filled nodes quote the source and open
+ * nodes read the record.
  */
 const NODES: Node[] = [
   { label: 'find_symbol', ring: 1, angle: -90, filled: true },
@@ -39,6 +40,15 @@ const NODES: Node[] = [
 ]
 
 const RADII: Record<1 | 2 | 3, number> = { 1: 98, 2: 174, 3: 250 }
+
+/** One colour per family: code, documents, and the record. */
+const FAMILY: Record<1 | 2 | 3, string> = {
+  1: 'var(--c-iris)',
+  2: 'var(--c-teal)',
+  3: 'var(--c-violet)',
+}
+
+const DIAL_COLOURS = ['--c-iris', '--c-cyan', '--c-teal', '--c-violet', '--c-amber', '--c-rose']
 const CX = 450
 const CY = 300
 
@@ -72,9 +82,9 @@ export function IndexChart({ className }: { className?: string }) {
         y1={CY + (major ? 262 : 268) * Math.sin(angle)}
         x2={CX + 276 * Math.cos(angle)}
         y2={CY + 276 * Math.sin(angle)}
-        stroke={major ? 'var(--iris)' : 'var(--ink)'}
-        strokeWidth={major ? 0.9 : 0.4}
-        opacity={major ? 0.8 : 0.3}
+        stroke={major ? `var(${DIAL_COLOURS[(index / 10) % DIAL_COLOURS.length]})` : 'var(--ink)'}
+        strokeWidth={major ? 1 : 0.4}
+        opacity={major ? 0.9 : 0.3}
       />
     )
   })
@@ -86,9 +96,9 @@ export function IndexChart({ className }: { className?: string }) {
         key={index}
         cx={CX + 212 * Math.cos(angle)}
         cy={CY + 212 * Math.sin(angle)}
-        r={index % 6 === 0 ? 1.4 : 0.8}
-        fill="var(--iris)"
-        opacity={index % 6 === 0 ? 0.55 : 0.25}
+        r={index % 6 === 0 ? 1.5 : 0.8}
+        fill={`var(${DIAL_COLOURS[(index / 6) % DIAL_COLOURS.length]})`}
+        opacity={index % 6 === 0 ? 0.6 : 0.18}
       />
     )
   })
@@ -155,9 +165,9 @@ export function IndexChart({ className }: { className?: string }) {
             y1={CY + 34 * Math.sin(angle)}
             x2={x}
             y2={y}
-            stroke={node.filled ? 'var(--iris)' : 'var(--ink)'}
-            strokeWidth={node.filled ? 0.7 : 0.45}
-            opacity={node.filled ? 0.35 : 0.14}
+            stroke={FAMILY[node.ring]}
+            strokeWidth={node.filled ? 0.65 : 0.4}
+            opacity={node.filled ? 0.3 : 0.1}
           />
         )
       })}
@@ -176,8 +186,8 @@ export function IndexChart({ className }: { className?: string }) {
               cx={x}
               cy={y}
               r="4.2"
-              fill={node.filled ? 'var(--iris)' : 'var(--paper)'}
-              stroke={node.filled ? 'var(--iris)' : 'var(--ink)'}
+              fill={node.filled ? FAMILY[node.ring] : 'var(--paper)'}
+              stroke={node.filled ? FAMILY[node.ring] : FAMILY[node.ring]}
               strokeWidth="0.9"
             />
             {node.filled && <circle cx={x} cy={y} r="1.4" fill="var(--paper)" />}
@@ -211,7 +221,7 @@ export function IndexChart({ className }: { className?: string }) {
 
       {/* Legend and scale. */}
       <g transform="translate(32 566)">
-        <circle cx="0" cy="-2" r="3.4" fill="var(--iris)" />
+        <circle cx="0" cy="-2" r="3.4" fill="var(--c-iris)" />
         <text x="10" y="0" fontFamily="IBM Plex Mono, monospace" fontSize="7.2" letterSpacing="1.2" fill="var(--muted)">
           QUOTES THE SOURCE
         </text>
@@ -219,7 +229,7 @@ export function IndexChart({ className }: { className?: string }) {
         <text x="200" y="0" fontFamily="IBM Plex Mono, monospace" fontSize="7.2" letterSpacing="1.2" fill="var(--muted)">
           READS THE RECORD
         </text>
-        <line x1="330" y1="-2" x2="376" y2="-2" stroke="var(--iris)" strokeWidth="0.7" opacity="0.45" />
+        <line x1="330" y1="-2" x2="376" y2="-2" stroke="var(--c-iris)" strokeWidth="0.7" opacity="0.45" />
         <text x="384" y="0" fontFamily="IBM Plex Mono, monospace" fontSize="7.2" letterSpacing="1.2" fill="var(--muted)">
           ONE CALL
         </text>

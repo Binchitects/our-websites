@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom'
 import { Logo } from '@/components/Logo'
+import { Spectrum } from '@/components/ui/Spectrum'
 import { FOOTER_COLUMNS, SITE } from '@/lib/content'
 
 /** The colophon: where the report ends, and what it was set in. */
@@ -7,6 +8,7 @@ export function SiteFooter() {
   return (
     <footer className="footer">
       <div className="shell">
+        <Spectrum className="footer-spectrum" />
         <div className="footer-grid">
           <div>
             <Logo />
@@ -44,7 +46,7 @@ export function SiteFooter() {
 
         <div className="footer-colophon">
           <span>© {new Date().getFullYear()} Binchitects and contributors</span>
-          <span>Set in Newsreader and IBM Plex</span>
+          <span>Set in Archivo and IBM Plex</span>
           <span>Built as .NET 10 and React images</span>
           <span>
             Open source by{' '}

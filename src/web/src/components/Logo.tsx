@@ -3,8 +3,8 @@ import { ArgusMark } from '@/components/brand/ArgusMark'
 import { cn } from '@/lib/cn'
 
 /**
- * The masthead mark: an eye drawn in ink, the word Argus in Newsreader with an
- * iris-blue full stop, and the publisher's line beneath.
+ * The masthead mark: an eye drawn in ink, the word Argus in Archivo with an
+ * iris-blue full stop, and the publisher's red-orange tag beneath.
  */
 export function Logo({ className }: { className?: string }) {
   return (
