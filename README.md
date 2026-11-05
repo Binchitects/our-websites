@@ -31,11 +31,11 @@ Three images, built from this repository, deployed together.
                                                     /data/contact-requests.jsonl
 ```
 
-The site is designed to run the way the product does: on your own hardware. It
-has no external runtime dependency — no analytics, no CDN, no third-party fonts,
-no database server. The API has **no NuGet packages**, so it builds without a
-package feed; the web image still needs npm for its own dependencies. Once built,
-the site runs on an air-gapped network.
+The sites are designed to run the way the product does: on your own hardware.
+They have no external runtime dependency — no analytics, no CDN, no third-party
+fonts, no database server. The API has **no NuGet packages**, so it builds
+without a package feed; the two web images still need npm at build time. Once
+built, the stack runs on an air-gapped network.
 
 ---
 
