@@ -50,12 +50,25 @@
     <script type="application/ld+json">
       {
         "@context": "https://schema.org",
-        "@type": "Organization",
-        "name": "Binchitects",
-        "url": "https://binchitects.com",
-        "logo": "https://binchitects.com/icon-512.png",
-        "description": "An open-source studio building software people can own, read and carry forward.",
-        "sameAs": ["https://github.com/Binchitects"]
+        "@graph": [
+          {
+            "@type": "Organization",
+            "@id": "https://binchitects.com/#organization",
+            "name": "Binchitects",
+            "url": "https://binchitects.com",
+            "logo": "https://binchitects.com/icon-512.png",
+            "description": "An open-source studio building software people can own, read and carry forward.",
+            "sameAs": ["https://github.com/Binchitects", "https://argus.binchitects.com"]
+          },
+          {
+            "@type": "WebSite",
+            "@id": "https://binchitects.com/#website",
+            "url": "https://binchitects.com/",
+            "name": "Binchitects",
+            "inLanguage": ["en", "fa"],
+            "publisher": { "@id": "https://binchitects.com/#organization" }
+          }
+        ]
       }
     </script>
   </head>

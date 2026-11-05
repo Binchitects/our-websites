@@ -1,4 +1,3 @@
-import { useId } from 'react'
 import { useLang } from '@/lib/i18n'
 
 /**
@@ -7,13 +6,14 @@ import { useLang } from '@/lib/i18n'
  * iris cut in fine radial lines. Twelve major ticks carry the Argus spectrum,
  * so the instrument reads as a colour dial and not a monochrome one.
  */
+const round = (value: number) => Math.round(value * 100) / 100
+
 export function ArgusSeal({ className }: { className?: string }) {
   const fa = useLang() === 'fa'
-  const id = useId().replace(/:/g, '')
-  const irisId = `seal-iris-${id}`
-  const clipId = `seal-clip-${id}`
-  const topPath = `seal-top-${id}`
-  const bottomPath = `seal-bottom-${id}`
+  const irisId = 'argus-seal-iris'
+  const clipId = 'argus-seal-clip'
+  const topPath = 'argus-seal-top'
+  const bottomPath = 'argus-seal-bottom'
 
   const BANDS = ['--c-iris', '--c-cyan', '--c-teal', '--c-violet', '--c-amber', '--c-rose']
 
@@ -25,10 +25,10 @@ export function ArgusSeal({ className }: { className?: string }) {
     return (
       <line
         key={index}
-        x1={320 + inner * Math.cos(angle)}
-        y1={320 + inner * Math.sin(angle)}
-        x2={320 + 301 * Math.cos(angle)}
-        y2={320 + 301 * Math.sin(angle)}
+        x1={round(320 + inner * Math.cos(angle))}
+        y1={round(320 + inner * Math.sin(angle))}
+        x2={round(320 + 301 * Math.cos(angle))}
+        y2={round(320 + 301 * Math.sin(angle))}
         stroke={major ? `var(${band})` : 'var(--ink)'}
         strokeWidth={major ? 1.7 : 0.5}
         opacity={major ? 1 : 0.45}
@@ -41,10 +41,10 @@ export function ArgusSeal({ className }: { className?: string }) {
     return (
       <line
         key={index}
-        x1={320 + 236 * Math.cos(angle)}
-        y1={320 + 236 * Math.sin(angle)}
-        x2={320 + 242 * Math.cos(angle)}
-        y2={320 + 242 * Math.sin(angle)}
+        x1={round(320 + 236 * Math.cos(angle))}
+        y1={round(320 + 236 * Math.sin(angle))}
+        x2={round(320 + 242 * Math.cos(angle))}
+        y2={round(320 + 242 * Math.sin(angle))}
         stroke="var(--ink)"
         strokeWidth="0.5"
         opacity="0.38"
@@ -58,10 +58,10 @@ export function ArgusSeal({ className }: { className?: string }) {
     return (
       <line
         key={index}
-        x1={320 + inner * Math.cos(angle)}
-        y1={320 + inner * Math.sin(angle)}
-        x2={320 + 230 * Math.cos(angle)}
-        y2={320 + 230 * Math.sin(angle)}
+        x1={round(320 + inner * Math.cos(angle))}
+        y1={round(320 + inner * Math.sin(angle))}
+        x2={round(320 + 230 * Math.cos(angle))}
+        y2={round(320 + 230 * Math.sin(angle))}
         stroke="var(--ink)"
         strokeWidth={index % 8 === 0 ? 0.8 : 0.45}
         opacity={index % 8 === 0 ? 0.35 : 0.18}
@@ -77,10 +77,10 @@ export function ArgusSeal({ className }: { className?: string }) {
     return (
       <line
         key={index}
-        x1={320 + inner * Math.cos(angle)}
-        y1={320 + inner * Math.sin(angle)}
-        x2={320 + outer * Math.cos(angle)}
-        y2={320 + outer * Math.sin(angle)}
+        x1={round(320 + inner * Math.cos(angle))}
+        y1={round(320 + inner * Math.sin(angle))}
+        x2={round(320 + outer * Math.cos(angle))}
+        y2={round(320 + outer * Math.sin(angle))}
         stroke={light ? '#b7e4ff' : '#0a2a7a'}
         strokeWidth={light ? 1.1 : 0.7}
         opacity={light ? 0.5 : 0.32}
@@ -93,10 +93,10 @@ export function ArgusSeal({ className }: { className?: string }) {
     return (
       <line
         key={index}
-        x1={320 + 68 * Math.cos(angle)}
-        y1={320 + 68 * Math.sin(angle)}
-        x2={320 + 74 * Math.cos(angle)}
-        y2={320 + 74 * Math.sin(angle)}
+        x1={round(320 + 68 * Math.cos(angle))}
+        y1={round(320 + 68 * Math.sin(angle))}
+        x2={round(320 + 74 * Math.cos(angle))}
+        y2={round(320 + 74 * Math.sin(angle))}
         stroke="var(--ink)"
         strokeWidth="0.45"
         opacity="0.26"

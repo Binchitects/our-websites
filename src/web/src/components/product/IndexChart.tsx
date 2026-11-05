@@ -1,4 +1,3 @@
-import { useId } from 'react'
 
 type Node = {
   label: string
@@ -52,19 +51,20 @@ const DIAL_COLOURS = ['--c-iris', '--c-cyan', '--c-teal', '--c-violet', '--c-amb
 const CX = 450
 const CY = 300
 
+const round = (value: number) => Math.round(value * 100) / 100
+
 export function IndexChart({ className }: { className?: string }) {
-  const id = useId().replace(/:/g, '')
-  const grid = `chart-grid-${id}`
+  const grid = 'argus-chart-grid'
 
   const spokes = Array.from({ length: 12 }, (_, index) => {
     const angle = (index * 30 * Math.PI) / 180
     return (
       <line
         key={index}
-        x1={CX + 76 * Math.cos(angle)}
-        y1={CY + 76 * Math.sin(angle)}
-        x2={CX + 268 * Math.cos(angle)}
-        y2={CY + 268 * Math.sin(angle)}
+        x1={round(CX + 76 * Math.cos(angle))}
+        y1={round(CY + 76 * Math.sin(angle))}
+        x2={round(CX + 268 * Math.cos(angle))}
+        y2={round(CY + 268 * Math.sin(angle))}
         stroke="var(--ink)"
         strokeWidth="0.4"
         opacity="0.16"
@@ -78,10 +78,10 @@ export function IndexChart({ className }: { className?: string }) {
     return (
       <line
         key={index}
-        x1={CX + (major ? 262 : 268) * Math.cos(angle)}
-        y1={CY + (major ? 262 : 268) * Math.sin(angle)}
-        x2={CX + 276 * Math.cos(angle)}
-        y2={CY + 276 * Math.sin(angle)}
+        x1={round(CX + (major ? 262 : 268) * Math.cos(angle))}
+        y1={round(CY + (major ? 262 : 268) * Math.sin(angle))}
+        x2={round(CX + 276 * Math.cos(angle))}
+        y2={round(CY + 276 * Math.sin(angle))}
         stroke={major ? `var(${DIAL_COLOURS[(index / 10) % DIAL_COLOURS.length]})` : 'var(--ink)'}
         strokeWidth={major ? 1 : 0.4}
         opacity={major ? 0.9 : 0.3}
@@ -94,8 +94,8 @@ export function IndexChart({ className }: { className?: string }) {
     return (
       <circle
         key={index}
-        cx={CX + 212 * Math.cos(angle)}
-        cy={CY + 212 * Math.sin(angle)}
+        cx={round(CX + 212 * Math.cos(angle))}
+        cy={round(CY + 212 * Math.sin(angle))}
         r={index % 6 === 0 ? 1.5 : 0.8}
         fill={`var(${DIAL_COLOURS[(index / 6) % DIAL_COLOURS.length]})`}
         opacity={index % 6 === 0 ? 0.6 : 0.18}
@@ -161,10 +161,10 @@ export function IndexChart({ className }: { className?: string }) {
         return (
           <line
             key={`line-${node.label}`}
-            x1={CX + 34 * Math.cos(angle)}
-            y1={CY + 34 * Math.sin(angle)}
-            x2={x}
-            y2={y}
+            x1={round(CX + 34 * Math.cos(angle))}
+            y1={round(CY + 34 * Math.sin(angle))}
+            x2={round(x)}
+            y2={round(y)}
             stroke={FAMILY[node.ring]}
             strokeWidth={node.filled ? 0.65 : 0.4}
             opacity={node.filled ? 0.3 : 0.1}
@@ -183,14 +183,14 @@ export function IndexChart({ className }: { className?: string }) {
         return (
           <g key={node.label}>
             <circle
-              cx={x}
-              cy={y}
+              cx={round(x)}
+              cy={round(y)}
               r="4.2"
               fill={node.filled ? FAMILY[node.ring] : 'var(--paper)'}
               stroke={node.filled ? FAMILY[node.ring] : FAMILY[node.ring]}
               strokeWidth="0.9"
             />
-            {node.filled && <circle cx={x} cy={y} r="1.4" fill="var(--paper)" />}
+            {node.filled && <circle cx={round(x)} cy={round(y)} r="1.4" fill="var(--paper)" />}
             <text
               x={labelX}
               y={y + 2.6}

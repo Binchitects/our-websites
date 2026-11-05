@@ -1,5 +1,3 @@
-import { useId } from 'react'
-
 /**
  * The Argus mark: a roundel with the eye in it. A filled disc, a bone sclera,
  * one iris-blue iris, and a dial of ticks around the rim. Six major ticks carry
@@ -7,6 +5,8 @@ import { useId } from 'react'
  * the page's ink and the eye is its paper, so the mark flips with the theme; the
  * iris stays blue. Drawn rather than traced, it stays crisp at 16px and at 2m.
  */
+const round = (value: number) => Math.round(value * 100) / 100
+
 export function ArgusMark({
   className,
   label = 'Argus Arena',
@@ -14,7 +14,7 @@ export function ArgusMark({
   className?: string
   label?: string
 }) {
-  const id = useId().replace(/:/g, '')
+  const iris = 'argus-mark-iris'
   const bands = ['--c-iris', '--c-cyan', '--c-teal', '--c-violet', '--c-amber', '--c-rose']
   const ticks = Array.from({ length: 24 }, (_, index) => {
     const angle = (index * 15 * Math.PI) / 180
@@ -24,10 +24,10 @@ export function ArgusMark({
     return (
       <line
         key={index}
-        x1={32 + inner * Math.cos(angle)}
-        y1={32 + inner * Math.sin(angle)}
-        x2={32 + outer * Math.cos(angle)}
-        y2={32 + outer * Math.sin(angle)}
+        x1={round(32 + inner * Math.cos(angle))}
+        y1={round(32 + inner * Math.sin(angle))}
+        x2={round(32 + outer * Math.cos(angle))}
+        y2={round(32 + outer * Math.sin(angle))}
         stroke={major ? `var(${bands[(index / 6) % bands.length]})` : 'var(--paper)'}
         strokeWidth={major ? 1.1 : 0.45}
         opacity={major ? 1 : 0.35}
@@ -44,7 +44,7 @@ export function ArgusMark({
       xmlns="http://www.w3.org/2000/svg"
     >
       <defs>
-        <radialGradient id={`mark-iris-${id}`} cx="0.38" cy="0.28" r="0.9">
+        <radialGradient id={iris} cx="0.38" cy="0.28" r="0.9">
           <stop offset="0" stopColor="var(--iris)" />
           <stop offset="1" stopColor="var(--iris-deep)" />
         </radialGradient>
@@ -66,7 +66,7 @@ export function ArgusMark({
         d="M9.5 32C16.5 18 47.5 18 54.5 32C47.5 46 16.5 46 9.5 32Z"
         fill="var(--paper)"
       />
-      <circle cx="32" cy="32" r="9" fill={`url(#mark-iris-${id})`} />
+      <circle cx="32" cy="32" r="9" fill={`url(#${iris})`} />
       <circle cx="32" cy="32" r="3.8" fill="#0a0c10" />
       <circle cx="34.8" cy="28.7" r="1.8" fill="var(--paper)" />
     </svg>

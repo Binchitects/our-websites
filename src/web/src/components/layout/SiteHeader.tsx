@@ -7,11 +7,6 @@ import { Link, NavLink } from '@/components/ui/LocalLink'
 import { NAV, SITE } from '@/lib/content'
 import { useLang } from '@/lib/i18n'
 
-type Theme = 'dark' | 'light'
-
-function currentTheme(): Theme {
-  return document.documentElement.dataset.theme === 'light' ? 'light' : 'dark'
-}
 
 /**
  * The masthead: wordmark, index, and the two decisions a visitor makes here —
@@ -19,15 +14,10 @@ function currentTheme(): Theme {
  */
 export function SiteHeader() {
   const [open, setOpen] = useState(false)
-  const [theme, setTheme] = useState<Theme>('dark')
   const location = useLocation()
   const lang = useLang()
   const fa = lang === 'fa'
   const navLabel = (item: (typeof NAV)[number]) => (fa ? (item.labelFa ?? item.label) : item.label)
-
-  useEffect(() => {
-    setTheme(currentTheme())
-  }, [])
 
   useEffect(() => {
     setOpen(false)
@@ -46,8 +36,7 @@ export function SiteHeader() {
   }, [open])
 
   const toggleTheme = () => {
-    const next: Theme = theme === 'dark' ? 'light' : 'dark'
-    setTheme(next)
+    const next = document.documentElement.dataset.theme === 'light' ? 'dark' : 'light'
     document.documentElement.dataset.theme = next
     document.documentElement.style.colorScheme = next
     try {
@@ -80,10 +69,10 @@ export function SiteHeader() {
               type="button"
               onClick={toggleTheme}
               className="theme-toggle"
-              aria-label={theme === 'dark' ? (fa ? 'استفاده از پوستهٔ روشن' : 'Use the light theme') : (fa ? 'استفاده از پوستهٔ تیره' : 'Use the dark theme')}
+              aria-label={fa ? 'تغییر پوستهٔ روشن و تیره' : 'Toggle the light and dark theme'}
             >
-              {theme === 'dark' ? <Sun size={12} aria-hidden /> : <Moon size={12} aria-hidden />}
-              {theme === 'dark' ? (fa ? 'روشن' : 'Light') : (fa ? 'تیره' : 'Dark')}
+              <Sun size={12} className="theme-icon theme-icon-sun" aria-hidden />
+              <Moon size={12} className="theme-icon theme-icon-moon" aria-hidden />
             </button>
             <Link to="/contact" className="btn btn-outline btn-sm">
               {fa ? 'با ما حرف بزنید' : 'Talk to us'}
@@ -140,9 +129,15 @@ export function SiteHeader() {
               {fa ? 'کد منبع در GitHub' : 'Source on GitHub'}
               <ArrowUpRight size={14} aria-hidden />
             </a>
-            <button type="button" onClick={toggleTheme} className="theme-toggle" style={{ alignSelf: 'flex-start' }}>
-              {theme === 'dark' ? <Sun size={12} aria-hidden /> : <Moon size={12} aria-hidden />}
-              {theme === 'dark' ? (fa ? 'پوستهٔ روشن' : 'Light theme') : (fa ? 'پوستهٔ تیره' : 'Dark theme')}
+            <button
+              type="button"
+              onClick={toggleTheme}
+              className="theme-toggle"
+              aria-label={fa ? 'تغییر پوستهٔ روشن و تیره' : 'Toggle the light and dark theme'}
+              style={{ alignSelf: 'flex-start' }}
+            >
+              <Sun size={12} className="theme-icon theme-icon-sun" aria-hidden />
+              <Moon size={12} className="theme-icon theme-icon-moon" aria-hidden />
             </button>
             <p className="dateline" style={{ marginTop: '18px' }}>
               <span>Argus Arena</span>

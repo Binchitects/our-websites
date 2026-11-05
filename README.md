@@ -112,7 +112,8 @@ gives it a page: [binchitects.com](https://binchitects.com).
    (strict) is still the recommended mode. Certificate renewal is yours: replace
    the files and `docker compose restart edge`.
    See [`docs/DEPLOYMENT.md`](docs/DEPLOYMENT.md) for the certificate check,
-   local trial, backups and hardening.
+   local trial, backups and hardening, and [`docs/SEO.md`](docs/SEO.md) for the
+   Search Console, sitemap and content checklist.
 
 ## Local development
 
@@ -240,6 +241,7 @@ deploy/traefik/        the shared TLS certificate configuration
 deploy/tls/            your certificate and key (gitignored)
 docker-compose.yml     Traefik, both sites and the API
 docs/DEPLOYMENT.md     DNS, TLS, local trial, backups, updates, hardening
+docs/SEO.md            indexing, hreflang, structured data, content and links
 ```
 
 ## Design
@@ -306,6 +308,9 @@ Both sites ship in **English** and **Persian**:
 - Persian release notes on `/fa/changelog` are shown in their source language
   (English), because they come from GitHub; the interface around them is
   translated.
+- Every page is server-rendered, every unknown path is a real `404`, and both
+  sitemaps carry `hreflang` alternates. See [`docs/SEO.md`](docs/SEO.md) for the
+  indexing checklist and the honest version of “rank first”.
 
 ## Brand
 

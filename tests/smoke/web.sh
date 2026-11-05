@@ -68,7 +68,15 @@ grep -q '"status"' "$tmp/body" || fail "/api is not proxied to the API"
 pass "/api is proxied to the API"
 
 status="$(code "$BASE_URL/a-route-that-does-not-exist")"
-[ "$status" = "200" ] || fail "the SPA fallback answered $status"
-pass "unknown routes fall back to the app (which shows its 404)"
+[ "$status" = "404" ] || fail "an unknown route answered $status"
+fetch "$BASE_URL/a-route-that-does-not-exist"
+grep -qi "Page not found" "$tmp/body" || fail "the English 404 page is missing"
+pass "unknown routes answer with a real English 404"
+
+status="$(code "$BASE_URL/fa/a-route-that-does-not-exist")"
+[ "$status" = "404" ] || fail "an unknown Persian route answered $status"
+fetch "$BASE_URL/fa/a-route-that-does-not-exist"
+grep -qi "صفحه پیدا نشد" "$tmp/body" || fail "the Persian 404 page is missing"
+pass "unknown Persian routes answer with a real Persian 404"
 
 echo "Web smoke test passed."

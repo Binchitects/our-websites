@@ -45,34 +45,59 @@
     <script type="application/ld+json">
       {
         "@context": "https://schema.org",
-        "@type": "SoftwareApplication",
-        "name": "Argus Arena",
-        "applicationCategory": "BusinessApplication",
-        "operatingSystem": "Linux",
-        "description": "Self-hosted AI platform: chat, coding agent and IDE, code index, studio, meetings, agents, and compliance evidence on your own GPUs.",
-        "url": "https://argus.binchitects.com/",
-        "license": "https://www.gnu.org/licenses/agpl-3.0.html",
-        "author": { "@type": "Organization", "name": "Binchitects", "url": "https://binchitects.com" },
-        "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" }
+        "@graph": [
+          {
+            "@type": "Organization",
+            "@id": "https://binchitects.com/#organization",
+            "name": "Binchitects",
+            "url": "https://binchitects.com",
+            "logo": {
+              "@type": "ImageObject",
+              "url": "https://argus.binchitects.com/icon-512.png"
+            },
+            "sameAs": [
+              "https://github.com/Binchitects",
+              "https://github.com/Binchitects/argus",
+              "https://binchitects.com"
+            ]
+          },
+          {
+            "@type": "WebSite",
+            "@id": "https://argus.binchitects.com/#website",
+            "url": "https://argus.binchitects.com/",
+            "name": "Argus Arena",
+            "inLanguage": ["en", "fa"],
+            "publisher": { "@id": "https://binchitects.com/#organization" }
+          },
+          {
+            "@type": "SoftwareApplication",
+            "@id": "https://argus.binchitects.com/#software",
+            "name": "Argus Arena",
+            "alternateName": "ARGUS",
+            "applicationCategory": "BusinessApplication",
+            "applicationSubCategory": "Self-hosted AI platform",
+            "operatingSystem": "Linux",
+            "softwareVersion": "7.7.0",
+            "isAccessibleForFree": true,
+            "inLanguage": ["en", "fa"],
+            "description": "Self-hosted AI platform: chat, coding agent and IDE, code index, studio, meetings, agents, and compliance evidence on your own GPUs.",
+            "url": "https://argus.binchitects.com/",
+            "license": "https://www.gnu.org/licenses/agpl-3.0.html",
+            "publisher": { "@id": "https://binchitects.com/#organization" },
+            "author": { "@id": "https://binchitects.com/#organization" },
+            "offers": {
+              "@type": "Offer",
+              "price": "0",
+              "priceCurrency": "USD",
+              "availability": "https://schema.org/InStock"
+            }
+          }
+        ]
       }
     </script>
   </head>
   <body>
     <div id="root"></div>
-    <noscript>
-      <div style="max-width: 720px; margin: 4rem auto; padding: 0 1.5rem; font-family: system-ui, sans-serif; color: #e9effa">
-        <h1>ARGUS</h1>
-        <p>
-          Argus Arena is the self-hosted AI platform for teams that cannot send their work to
-          someone else's cloud: chat, Code Arena's coding agent and browser IDE, a code index,
-          studio, meetings, agents, and compliance evidence, on your own GPUs.
-        </p>
-        <p>
-          Please enable JavaScript to read the full site, or start from the repository:
-          <a href="https://github.com/Binchitects/argus" style="color: #7dd8ff">github.com/Binchitects/argus</a>.
-        </p>
-      </div>
-    </noscript>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>

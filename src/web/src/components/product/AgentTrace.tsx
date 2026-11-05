@@ -1,4 +1,3 @@
-import { useId } from 'react'
 
 /**
  * The agent's trace: plan, ground, check, repair, carry. Each stop is one band
@@ -14,10 +13,9 @@ const STEPS = [
 ]
 
 export function AgentTrace({ className }: { className?: string }) {
-  const id = useId().replace(/:/g, '')
-  const trail = `trace-line-${id}`
-  const arrow = `trace-arrow-${id}`
-  const arrowFail = `trace-arrow-fail-${id}`
+  const trail = 'argus-trace-line'
+  const arrow = 'argus-trace-arrow'
+  const arrowFail = 'argus-trace-arrow-fail'
 
   return (
     <svg

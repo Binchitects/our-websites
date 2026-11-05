@@ -12,6 +12,7 @@ TestResults/
 
 # Local configuration, certificates and data
 .env
+.ssr/
 src/api/data/
 data/
 deploy/tls/*.pem
