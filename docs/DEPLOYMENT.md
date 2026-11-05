@@ -43,6 +43,33 @@ There is no automatic renewal. Replace the two files and restart the edge
 (`docker compose restart edge`). Do this before expiry, from whatever issued
 the certificate.
 
+### Behind Cloudflare
+
+If the DNS record is proxied (orange cloud), Cloudflare must connect to the
+origin over **443**, not 80:
+
+- **SSL/TLS → Overview**: choose **Full (strict)**. Use **Full** only if the
+  origin certificate is self-signed. **Flexible** makes Cloudflare speak HTTP to
+  the origin, Traefik answers `308` to the same HTTPS URL, and the browser loops
+  with `ERR_TOO_MANY_REDIRECTS`.
+- **Cloudflare Tunnel**: set the public hostname's service to
+  `https://localhost:443`, not `http://localhost:80` (turn on *No TLS Verify* if
+  the origin uses a self-signed or Cloudflare Origin CA certificate).
+- **Origin Rules**: point the origin port at 443.
+- A **Cloudflare Origin Certificate** is trusted by Cloudflare in Full (strict)
+  mode even though public clients do not trust it; put its certificate and key
+  at the paths in `.env` and restart the edge.
+
+Cloudflare's **Always Use HTTPS** can stay on. Purge the cache after changing
+the mode.
+
+Check the origin directly from the server:
+
+```bash
+curl -skI https://127.0.0.1/ -H 'Host: argus.binchitects.com'
+# 200 is correct; 308 to the same URL means the HTTPS port is not reaching websecure
+```
+
 ## 3. First deploy
 
 ```bash
@@ -225,6 +252,10 @@ Anything under ASP.NET's `Site:` section can be set with
   but still grants control of the daemon. Run the stack on a host you control.
 
 ## 10. Troubleshooting
+
+**`ERR_TOO_MANY_REDIRECTS` behind Cloudflare** — Cloudflare is in Flexible mode
+or the tunnel/Origin Rule points at port 80. See
+[Behind Cloudflare](#behind-cloudflare); the origin must be reached on 443.
 
 **`docker compose up` fails on the certificate** — one of the bind-mount paths
 does not exist. Check `TLS_CERT_FILE` / `TLS_KEY_FILE`, and that the files contain

@@ -10,6 +10,11 @@ A single certificate with both names as SANs is enough; Traefik serves it for
 both domains. The files are read-only mounts; restarting the stack picks up a
 renewed certificate.
 
+Behind Cloudflare, either a public certificate or a Cloudflare Origin CA
+certificate works; set SSL/TLS to **Full (strict)** so Cloudflare connects to
+the origin on 443. **Flexible** connects on 80 and loops against Traefik's
+HTTP-to-HTTPS redirect.
+
 For a local test certificate (browser warning expected):
 
 ```bash
