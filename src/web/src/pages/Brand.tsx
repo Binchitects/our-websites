@@ -1,8 +1,10 @@
 import { ArrowUpRight } from 'lucide-react'
 import { ArgusMark } from '@/components/brand/ArgusMark'
 import { ArgusSeal } from '@/components/brand/ArgusSeal'
+import { BinchitectsLockup } from '@/components/brand/BinchitectsLockup'
 import { ArticleOpener } from '@/components/ui/ArticleOpener'
 import { Chapter, ChapterHead } from '@/components/ui/Chapter'
+import { SITE } from '@/lib/content'
 import { routeMeta } from '@/lib/route-meta'
 import { useSeo } from '@/lib/seo'
 
@@ -132,7 +134,40 @@ export function Brand() {
         </p>
       </Chapter>
 
-      <Chapter number="05" label="Files">
+      <Chapter number="05" label="The publisher">
+        <ChapterHead
+          title="Binchitects keeps an open-source team."
+          standfirst="The publisher is not a line in the footer. Binchitects keeps a team dedicated to open-source development: the repository, the manual, the issues and the release notes are public, and the AGPL is the licence the work is offered under."
+        />
+        <BinchitectsLockup className="bx-lg" />
+        <div className="publisher-grid">
+          <div>
+            <p className="publisher-lead">The work is done in the open, by people whose job it is.</p>
+            <p className="body">
+              Argus Arena is developed in public. The source is on GitHub, the manual is in the
+              repository, the issues are open, and the release notes say what changed and why. The
+              contributing guide is the way in.
+            </p>
+          </div>
+          <div className="publisher-links">
+            <a href={SITE.org} target="_blank" rel="noreferrer noopener">
+              <span>Binchitects on GitHub</span>
+              <ArrowUpRight size={13} aria-hidden />
+            </a>
+            <a href={SITE.github} target="_blank" rel="noreferrer noopener">
+              <span>The repository</span>
+              <ArrowUpRight size={13} aria-hidden />
+            </a>
+            <a href={SITE.contributing} target="_blank" rel="noreferrer noopener">
+              <span>Contributing</span>
+              <ArrowUpRight size={13} aria-hidden />
+            </a>
+            <p className="publisher-meta">AGPL-3.0-only · source, issues and manual in public</p>
+          </div>
+        </div>
+      </Chapter>
+
+      <Chapter number="06" label="Files">
         <ChapterHead
           title="Take the vectors."
           standfirst="The mark and the seal are SVG, drawn to a 64 and 640 unit grid. The favicon, app icons and social image are generated from them."

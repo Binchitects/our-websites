@@ -47,6 +47,8 @@ export function CtaBand({
             <span>Commercial licence available</span>
             <span>·</span>
             <span>No vendor cloud</span>
+            <span>·</span>
+            <span>A Binchitects project</span>
           </div>
         </div>
         <div className="closing-figure">

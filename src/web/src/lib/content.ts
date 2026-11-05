@@ -34,6 +34,7 @@ export const SITE = {
   changelog: 'https://github.com/Binchitects/argus/blob/main/CHANGELOG.md',
   licensing: 'https://github.com/Binchitects/argus/blob/main/LICENSING.md',
   securityPolicy: 'https://github.com/Binchitects/argus/blob/main/SECURITY.md',
+  contributing: 'https://github.com/Binchitects/argus/blob/main/CONTRIBUTING.md',
   docs: 'https://github.com/Binchitects/argus/tree/main/docs',
   quickStart: 'https://github.com/Binchitects/argus#quick-start',
   deployment: 'https://github.com/Binchitects/argus/blob/main/docs/deployment.md',
@@ -86,6 +87,7 @@ export const FOOTER_COLUMNS = [
     links: [
       { label: 'Binchitects', href: SITE.org, external: true },
       { label: 'Brand', href: '/brand' },
+      { label: 'Contributing', href: SITE.contributing, external: true },
       { label: 'Talk to us', href: '/contact' },
       { label: 'Issues', href: SITE.issues, external: true },
       { label: 'Releases', href: SITE.releases, external: true },

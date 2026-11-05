@@ -52,6 +52,16 @@ docker compose down -v          # stop and remove the contact-request volume
 | ![Contact](docs/screenshots/contact.jpg) | ![Platform](docs/screenshots/platform.jpg) |
 | ![The brand page](docs/screenshots/brand.jpg) | ![The seal of Argus](docs/screenshots/seal.jpg) |
 
+### The publisher
+
+![The Binchitects publisher band on the home page](docs/screenshots/publisher.jpg)
+
+Binchitects keeps a team dedicated to open-source development. The home page gives
+the publisher a full band — the name between two code braces, the statement, and
+the way into the repository, the contributing guide, the issues and the releases.
+The same story is a chapter on `/brand`; the masthead and footer carry the
+publisher's name in bold.
+
 ## Production: argus.binchitects.com
 
 1. **DNS** — an `A` (and `AAAA`, if you have it) record for
@@ -201,6 +211,11 @@ The mark and seal are files as well as components:
 - [`src/web/public/brand/argus-seal.svg`](src/web/public/brand/argus-seal.svg)
 - [`src/web/public/favicon.svg`](src/web/public/favicon.svg)
 - [`src/web/public/og.png`](src/web/public/og.png)
+
+The publisher is **Binchitects**, which keeps a team dedicated to open-source
+development. The home page carries a full publisher band with the wordmark held
+between two code braces and the way into the repository, the contributing guide
+and the issues; `/brand` has a publisher chapter alongside the identity.
 
 `/brand` on the site is the specimen page: sizes, the seal, the lockup, the
 palette and the usage rules.

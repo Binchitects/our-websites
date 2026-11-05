@@ -11,9 +11,9 @@ export function SiteFooter() {
           <div>
             <Logo />
             <p className="footer-about">
-              The self-hosted AI platform for teams that cannot send their work to someone else&rsquo;s
-              cloud. Chat, Code Arena, the code index, studio, meetings, agents and the evidence an
-              auditor asks for.
+              <strong>A Binchitects project.</strong> The self-hosted AI platform for teams that
+              cannot send their work to someone else&rsquo;s cloud. Chat, Code Arena, the code index,
+              studio, meetings, agents and the evidence an auditor asks for.
             </p>
             <p className="dateline" style={{ marginTop: '18px' }}>
               <span className="dateline-strong">v{SITE.version}</span>
@@ -46,6 +46,12 @@ export function SiteFooter() {
           <span>© {new Date().getFullYear()} Binchitects and contributors</span>
           <span>Set in Newsreader and IBM Plex</span>
           <span>Built as .NET 10 and React images</span>
+          <span>
+            Open source by{' '}
+            <a href={SITE.org} target="_blank" rel="noreferrer noopener">
+              Binchitects
+            </a>
+          </span>
           <span>
             <a href={SITE.github} target="_blank" rel="noreferrer noopener">
               Source ↗

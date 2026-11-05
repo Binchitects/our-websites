@@ -5,6 +5,7 @@ import { CompareChapter } from '@/components/home/CompareChapter'
 import { DeployChapter } from '@/components/home/DeployChapter'
 import { Hero } from '@/components/home/Hero'
 import { LicenceChapter } from '@/components/home/LicenceChapter'
+import { PublishersBand } from '@/components/home/PublishersBand'
 import { QuestionsChapter } from '@/components/home/QuestionsChapter'
 import { StackChapter } from '@/components/home/StackChapter'
 import { Toc } from '@/components/home/Toc'
@@ -26,6 +27,7 @@ export function Home() {
       <AssuranceChapter />
       <CompareChapter />
       <LicenceChapter />
+      <PublishersBand />
       <QuestionsChapter />
       <CtaBand />
     </>
