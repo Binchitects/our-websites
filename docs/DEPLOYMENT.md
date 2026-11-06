@@ -94,6 +94,64 @@ the new image no longer contains. On Free the edge TTL is two hours, so a purge
 is not optional. Check the result with `curl -skI https://argus.binchitects.com/`
 and look for `cf-cache-status: HIT` on the second request.
 
+#### 526 Invalid SSL certificate with Full (strict)
+
+**Always Use HTTPS** only redirects visitors from HTTP to HTTPS at Cloudflare's
+edge. It does not decide how Cloudflare talks to the origin; **SSL/TLS mode**
+does.
+
+- **Flexible** works because Cloudflare connects to the origin over **HTTP port
+  80**, so there is no origin certificate to validate. The Cloudflare-to-origin
+  hop is unencrypted, including contact-form submissions. Do not leave it here.
+- **Full (strict)** connects over **HTTPS** and validates the origin
+  certificate. A self-signed certificate, the local `.localhost` certificate
+  from this repository, an expired certificate, a missing SAN, or an incomplete
+  chain produces Cloudflare error **526 Invalid SSL certificate**.
+
+Check what the server is actually presenting:
+
+```bash
+openssl x509 -in deploy/tls/fullchain.pem -noout \
+  -subject -issuer -dates -ext subjectAltName
+
+docker compose logs edge | tail -40
+```
+
+If the subject/SAN contains `binchitects.localhost` or `*.localhost`, the
+deployment is still using the local trial certificate.
+
+**Fix (recommended): a Cloudflare Origin CA certificate.**
+
+1. Cloudflare dashboard → **SSL/TLS → Origin Server → Create Certificate**.
+2. Add both names: `binchitects.com` and `*.binchitects.com` (the wildcard does
+   not cover the apex). Add `www.binchitects.com` if you use it.
+3. Choose RSA 2048 or ECDSA and a 15-year validity.
+4. Save the certificate and key on the server at the paths in `.env`
+   (`TLS_CERT_FILE` / `TLS_KEY_FILE`). The key must be readable by the Traefik
+   process; `chmod 600` is correct for root-owned files.
+5. Recreate the edge:
+
+   ```bash
+   docker compose up -d --force-recreate edge
+   ```
+
+6. Verify the origin certificate from the server:
+
+   ```bash
+   openssl s_client -connect 127.0.0.1:443 -servername binchitects.com \
+     </dev/null 2>/dev/null | openssl x509 -noout -subject -issuer -dates -ext subjectAltName
+   ```
+
+   The issuer should be `CloudFlare Origin SSL Certificate Authority`, and both
+   names must be in the SAN.
+
+7. Set **SSL/TLS → Overview** to **Full (strict)**, keep **Always Use HTTPS** on,
+   set minimum TLS to 1.2, and purge the Cloudflare cache.
+
+If you cannot use a valid certificate yet, use **Full** (not strict), which
+encrypts the Cloudflare-to-origin hop but skips validation. It is temporary;
+**Flexible** should not be left enabled.
+
 Check the origin directly from the server:
 
 ```bash
