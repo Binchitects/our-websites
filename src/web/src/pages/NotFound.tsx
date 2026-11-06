@@ -2,7 +2,7 @@ import { ArrowLeft, ArrowUpRight } from 'lucide-react'
 import { Link } from '@/components/ui/LocalLink'
 
 import { EyeLine } from '@/components/ui/Eye'
-import { SITE } from '@/lib/content'
+import { SITE } from '@/lib/site'
 import { useSeo } from '@/lib/seo'
 import { useLang } from '@/lib/i18n'
 

@@ -11,14 +11,29 @@ The home route no longer ships the Contact, Security, Brand, Changelog or Code
 Arena code. `main.tsx` loads only the chunk for the current path before
 hydration; `entry-server.tsx` preloads every page for the prerender pass.
 
+**Language and page data split.** The old shared `content.ts` pulled every
+route's copy and every icon into the initial chunk because the header imported
+it. It is now split into `lib/site.ts`, `lib/content/home.ts`,
+`lib/content/platform.ts`, `lib/content/argus.ts`, `lib/content/faq.ts` and
+`lib/content/contact.ts`. The home page no longer downloads the Platform,
+Contact or icon payload.
+
+**No render-blocking CSS.** The prerender scripts read the one compiled
+stylesheet and inline it into each page and the 404s, then remove the
+`<link rel="stylesheet">`. Font preloads are emitted immediately after the
+viewport meta, before the inline sheet, so the two faces start downloading at
+the first bytes of the document. Lighthouse now reports no render-blocking
+requests at all.
+
 **Subset fonts.** Fontsource packages were removed. The committed `.woff2`
 files carry only the glyphs the sites use, split by script and clamped to the
 variable ranges the CSS actually asks for. A language preloads two faces rather
 than the whole family. See [`FONTS.md`](FONTS.md) for sizes and provenance.
 
 **Caching.** Hashed assets under `/assets/` are `max-age=31536000, immutable`.
-HTML stays fresh in the browser but is a shared-cache candidate for five
-minutes:
+Public images and icons (favicon, brand SVGs, social card) are cached for 30
+days; `robots.txt`, `sitemap.xml` and the web manifest for one hour. HTML stays
+fresh in the browser but is a shared-cache candidate for five minutes:
 
 ```http
 Cache-Control: public, max-age=0, s-maxage=300,
@@ -39,14 +54,21 @@ simulated slow 4G. These are lab numbers, not field data.
 
 | Page | Performance | Accessibility | Best practices | SEO | FCP | LCP | CLS | Transfer |
 | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
-| Argus, English | 97 | 100 | 100 | 100 | 1.9 s | 2.3 s | 0 | 280 KiB |
-| Argus, Persian | 96 | 100 | 100 | 100 | 2.0 s | 2.5 s | 0 | 292 KiB |
+| Argus, English | 97 | 100 | 100 | 100 | 1.7 s | 2.3 s | 0 | 272 KiB |
+| Argus, Persian | 96 | 100 | 100 | 100 | 2.0 s | 2.5 s | 0 | 284 KiB |
 | Studio, English | 100 | 100 | 100 | 100 | 1.4 s | 1.7 s | 0 | 182 KiB |
-| Studio, Persian | 99 | 100 | 100 | 100 | 1.4 s | 1.8 s | 0 | 192 KiB |
+| Studio, Persian | 100 | 100 | 100 | 100 | 1.4 s | 1.7 s | 0 | 191 KiB |
 
-Before the font work the Argus English transfer was about 365 KiB and LCP 2.8 s;
-the studio was 251 KiB. The remaining payload is the React runtime, the shared
-content bundle and the two preloaded font faces.
+Both sites score **1.0** on `render-blocking-resources` and
+`uses-long-cache-ttl` in Lighthouse. The remaining Argus LCP gap is the webfont
+swap: FCP lands at 1.7 s, then the variable body face finishes about 0.6 s later
+and repaints the hero text. The alternative is `font-display: optional`, which
+would keep a system fallback on slow first visits; that trade is not taken here.
+
+
+Before this round the Argus English transfer was about 365 KiB and LCP 2.8 s;
+the studio was 251 KiB. The remaining payload is the React runtime, the home
+chunk and the two preloaded font faces.
 
 Reproduce from the repository root:
 

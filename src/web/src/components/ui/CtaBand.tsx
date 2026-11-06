@@ -2,7 +2,7 @@ import { ArrowRight, ArrowUpRight } from 'lucide-react'
 import { Link } from '@/components/ui/LocalLink'
 
 import { EyeLine } from '@/components/ui/Eye'
-import { SITE } from '@/lib/content'
+import { SITE } from '@/lib/site'
 import { useLang } from '@/lib/i18n'
 
 /** The closing spread: one iris-blue page, one statement, one eye. */

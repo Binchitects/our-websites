@@ -2,7 +2,7 @@
 import { Link } from '@/components/ui/LocalLink'
 import { ArticleOpener } from '@/components/ui/ArticleOpener'
 import { Chapter } from '@/components/ui/Chapter'
-import { SITE } from '@/lib/content'
+import { SITE } from '@/lib/site'
 import { usePageSeo } from '@/lib/seo'
 import { useLang } from '@/lib/i18n'
 

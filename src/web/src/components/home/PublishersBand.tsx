@@ -1,6 +1,6 @@
 import { ArrowUpRight } from 'lucide-react'
 import { BinchitectsLockup } from '@/components/brand/BinchitectsLockup'
-import { SITE } from '@/lib/content'
+import { SITE } from '@/lib/site'
 import { useLang } from '@/lib/i18n'
 
 const LINKS = [

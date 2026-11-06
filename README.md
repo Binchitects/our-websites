@@ -294,18 +294,20 @@ metadata.
 ## Performance
 
 Both sites are prerendered, route-split and self-hosted, with no third-party
-script on the page. The two prefetched font faces are subset to the glyphs the
-sites use, and HTML carries a five-minute shared-cache TTL so an edge can answer
-without going back to the origin.
+script on the page. The compiled stylesheet is inlined during prerender, so no
+CSS request blocks the first paint. Page copy is split by route as well as by
+language. The two prefetched font faces are subset to the glyphs the sites use,
+and HTML carries a five-minute shared-cache TTL so an edge can answer without
+going back to the origin.
 
 Lighthouse 12, mobile, simulated slow 4G, production images:
 
 | Page | Performance | Accessibility | SEO | LCP | Transfer |
 | --- | ---: | ---: | ---: | ---: | ---: |
-| Argus, English | 97 | 100 | 100 | 2.3 s | 280 KiB |
-| Argus, Persian | 96 | 100 | 100 | 2.5 s | 292 KiB |
+| Argus, English | 97 | 100 | 100 | 2.3 s | 272 KiB |
+| Argus, Persian | 96 | 100 | 100 | 2.5 s | 284 KiB |
 | Studio, English | 100 | 100 | 100 | 1.7 s | 182 KiB |
-| Studio, Persian | 99 | 100 | 100 | 1.8 s | 192 KiB |
+| Studio, Persian | 100 | 100 | 100 | 1.7 s | 191 KiB |
 
 These are lab numbers on one host, not field data. The first request after a
 deploy still pays the origin round trip; after that Cloudflare can serve the

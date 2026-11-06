@@ -3,7 +3,7 @@ import { Link } from '@/components/ui/LocalLink'
 
 import { ArgusSealFigure } from '@/components/brand/ArgusSeal'
 import { Spectrum } from '@/components/ui/Spectrum'
-import { SITE } from '@/lib/content'
+import { SITE } from '@/lib/site'
 import { useLang } from '@/lib/i18n'
 
 /** The opening spread: the claim, the standfirst, and the instrument itself. */

@@ -4,7 +4,7 @@ import { ArrowUpRight, Moon, Sun } from 'lucide-react'
 import { Logo } from '@/components/Logo'
 import { LangSwitch } from '@/components/ui/LangSwitch'
 import { Link, NavLink } from '@/components/ui/LocalLink'
-import { NAV, SITE } from '@/lib/content'
+import { NAV, SITE } from '@/lib/site'
 import { useLang } from '@/lib/i18n'
 
 

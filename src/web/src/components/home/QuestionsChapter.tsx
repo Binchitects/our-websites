@@ -1,7 +1,8 @@
 import { ArrowUpRight } from 'lucide-react'
 import { Chapter, ChapterHead } from '@/components/ui/Chapter'
 import { Faq } from '@/components/ui/Faq'
-import { FAQS, SITE } from '@/lib/content'
+import { FAQS } from '@/lib/content/faq'
+import { SITE } from '@/lib/site'
 import { useLang } from '@/lib/i18n'
 
 /** Chapter eight: the questions, set as a numbered index. */

@@ -15,21 +15,32 @@ const routes = JSON.parse(await readFile(path.resolve('src/routes.json'), 'utf8'
 const escape = (value) =>
   value.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;')
 
-const template = await readFile(path.join(DIST, 'index.html'), 'utf8')
 const assetFiles = await readdir(path.join(DIST, 'assets'))
+const cssFile = assetFiles.find((file) => file.endsWith('.css'))
+if (!cssFile) throw new Error('No compiled stylesheet was found in dist/assets.')
+const css = (await readFile(path.join(DIST, 'assets', cssFile), 'utf8')).replace(/<\/style/gi, '<\\/style')
+
+/** Inline the one stylesheet so no CSS request blocks the first paint. */
+function inlineCss(html) {
+  const inlined = html.replace(/<link\s+[^>]*rel="stylesheet"[^>]*>/, `<style>${css}</style>`)
+  if (inlined === html) throw new Error('Could not inline the compiled stylesheet.')
+  return inlined
+}
+
+const template = inlineCss(await readFile(path.join(DIST, 'index.html'), 'utf8'))
 const font = (prefix) => assetFiles.find((file) => file.startsWith(prefix) && file.endsWith('.woff2'))
 
 function preloads(lang) {
   const names =
     lang === 'fa'
       ? ['vazirmatn-arabic', 'archivo']
-      : ['archivo', 'plex-sans']
+      : ['plex-sans', 'archivo']
   return names
     .map(font)
     .filter(Boolean)
     .map(
       (file) =>
-        `<link rel="preload" href="/assets/${file}" as="font" type="font/woff2" crossorigin />`,
+        `<link rel="preload" href="/assets/${file}" as="font" type="font/woff2" crossorigin fetchpriority="high" />`,
     )
     .join('\n    ')
 }
@@ -65,8 +76,11 @@ async function withMeta(html, route, lang) {
     throw new Error(`Could not render ${localized(route, lang)} into its shell.`)
   }
 
+  const viewport = html.match(/<meta\s+name="viewport"[^>]*>/)
+  if (!viewport) throw new Error(`No viewport tag for ${localized(route, lang)}.`)
+  html = html.replace(viewport[0], `${viewport[0]}\n    ${preloads(lang)}`)
+
   const alternates = [
-    preloads(lang),
     `<link rel="alternate" hreflang="en" href="${en}" />`,
     `<link rel="alternate" hreflang="fa" href="${fa}" />`,
     `<link rel="alternate" hreflang="x-default" href="${en}" />`,

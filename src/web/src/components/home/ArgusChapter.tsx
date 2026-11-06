@@ -4,7 +4,7 @@ import { Link } from '@/components/ui/LocalLink'
 import { IndexChart } from '@/components/product/IndexChart'
 import { Chapter, ChapterHead } from '@/components/ui/Chapter'
 import { Plate } from '@/components/ui/Plate'
-import { ARGUS_EVIDENCE } from '@/lib/content'
+import { ARGUS_EVIDENCE } from '@/lib/content/argus'
 import { useLang } from '@/lib/i18n'
 
 const CATALOG = [

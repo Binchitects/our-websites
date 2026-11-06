@@ -46,6 +46,12 @@ grep -qi 'hreflang="fa"' "$tmp/body" || fail "the Persian hreflang is missing"
 pass "the Persian shell declares its language, direction and alternate"
 
 fetch "$BASE_URL/"
+if grep -qi 'rel="stylesheet"' "$tmp/body" || grep -q '/assets/[^"]*\.css' "$tmp/body"; then
+  fail "the stylesheet is still a render-blocking request"
+fi
+grep -q '<style>' "$tmp/body" || fail "the stylesheet was not inlined"
+pass "the stylesheet is inline, so no CSS request blocks the first paint"
+
 for header in content-security-policy x-content-type-options referrer-policy permissions-policy; do
   grep -qi "^$header:" "$tmp/headers" || fail "the site does not send $header"
 done

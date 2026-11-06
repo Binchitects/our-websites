@@ -3,7 +3,7 @@ import { ArrowUpRight, RefreshCw } from 'lucide-react'
 import { ArticleOpener } from '@/components/ui/ArticleOpener'
 import { Chapter } from '@/components/ui/Chapter'
 import { CtaBand } from '@/components/ui/CtaBand'
-import { SITE } from '@/lib/content'
+import { SITE } from '@/lib/site'
 import { usePageSeo } from '@/lib/seo'
 import { useLang } from '@/lib/i18n'
 

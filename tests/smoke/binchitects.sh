@@ -23,7 +23,11 @@ grep -qi "<title>.*Binchitects.*</title>" "$tmp/body" || fail "the title is miss
 grep -qi 'property="og:image"' "$tmp/body" || fail "the social image meta is missing"
 grep -q 'Open by default' "$tmp/body" || fail "the page was not prerendered"
 grep -q 'href="https://argus.binchitects.com"' "$tmp/body" || fail "the link to Argus is missing"
-pass "/ serves the prerendered studio page"
+if grep -qi 'rel="stylesheet"' "$tmp/body" || grep -q '/assets/[^"]*\.css' "$tmp/body"; then
+  fail "the stylesheet is still a render-blocking request"
+fi
+grep -q '<style>' "$tmp/body" || fail "the stylesheet was not inlined"
+pass "/ serves the prerendered studio page with inline CSS"
 
 status="$(code "$BASE_URL/fa")"
 [ "$status" = "200" ] || fail "/fa answered $status"

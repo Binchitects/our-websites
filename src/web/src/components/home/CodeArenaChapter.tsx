@@ -5,7 +5,7 @@ import { CodeArenaPlate } from '@/components/product/CodeArenaPlate'
 import { Chapter, ChapterHead } from '@/components/ui/Chapter'
 import { CodeBlock } from '@/components/ui/CodeBlock'
 import { Plate } from '@/components/ui/Plate'
-import { SITE } from '@/lib/content'
+import { SITE } from '@/lib/site'
 import { useLang } from '@/lib/i18n'
 
 const install = `$ curl -fsSL https://arena.internal/api/downloads/code-arena/install.sh | sh

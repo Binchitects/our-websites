@@ -10,7 +10,7 @@ import { CtaBand } from '@/components/ui/CtaBand'
 import { Faq } from '@/components/ui/Faq'
 import { IndexList } from '@/components/ui/IndexList'
 import { Plate } from '@/components/ui/Plate'
-import { SITE } from '@/lib/content'
+import { SITE } from '@/lib/site'
 import { usePageSeo } from '@/lib/seo'
 import { useLang } from '@/lib/i18n'
 

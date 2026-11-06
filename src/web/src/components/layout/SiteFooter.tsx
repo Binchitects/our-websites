@@ -2,7 +2,7 @@ import { Link } from '@/components/ui/LocalLink'
 import { LangSwitch } from '@/components/ui/LangSwitch'
 import { Logo } from '@/components/Logo'
 import { Spectrum } from '@/components/ui/Spectrum'
-import { FOOTER_COLUMNS, SITE } from '@/lib/content'
+import { FOOTER_COLUMNS, SITE } from '@/lib/site'
 import { useLang } from '@/lib/i18n'
 
 /** The colophon: where the report ends, and what it was set in. */

@@ -3,21 +3,32 @@ import path from 'node:path'
 import { render } from '../.ssr/entry-server.js'
 
 const ORIGIN = 'https://binchitects.com'
-const template = await readFile('dist/index.html', 'utf8')
 const assetFiles = await readdir('dist/assets')
+const cssFile = assetFiles.find((file) => file.endsWith('.css'))
+if (!cssFile) throw new Error('No compiled stylesheet was found in dist/assets.')
+const css = (await readFile(path.join('dist/assets', cssFile), 'utf8')).replace(/<\/style/gi, '<\\/style')
+
+/** Inline the one stylesheet so no CSS request blocks the first paint. */
+function inlineCss(html) {
+  const inlined = html.replace(/<link\s+[^>]*rel="stylesheet"[^>]*>/, `<style>${css}</style>`)
+  if (inlined === html) throw new Error('Could not inline the compiled stylesheet.')
+  return inlined
+}
+
+const template = inlineCss(await readFile('dist/index.html', 'utf8'))
 const font = (prefix) => assetFiles.find((file) => file.startsWith(prefix) && file.endsWith('.woff2'))
 
 function preloads(lang) {
   const names =
     lang === 'fa'
       ? ['vazirmatn-arabic', 'archivo']
-      : ['archivo', 'plex-sans']
+      : ['plex-sans', 'archivo']
   return names
     .map(font)
     .filter(Boolean)
     .map(
       (file) =>
-        `<link rel="preload" href="/assets/${file}" as="font" type="font/woff2" crossorigin />`,
+        `<link rel="preload" href="/assets/${file}" as="font" type="font/woff2" crossorigin fetchpriority="high" />`,
     )
     .join('\n    ')
 }
@@ -67,8 +78,11 @@ function page(lang) {
   html = html.replace(/<meta\s+name="twitter:title"\s+content="[^"]*"\s*\/?>/, `<meta name="twitter:title" content="${escape(meta.title)}" />`)
   html = html.replace(/<meta\s+name="twitter:description"\s+content="[^"]*"\s*\/?>/, `<meta name="twitter:description" content="${escape(meta.description)}" />`)
 
+  const viewport = html.match(/<meta\s+name="viewport"[^>]*>/)
+  if (!viewport) throw new Error(`No viewport tag for ${lang}.`)
+  html = html.replace(viewport[0], `${viewport[0]}\n    ${preloads(lang)}`)
+
   const alternates = [
-    preloads(lang),
     `<link rel="alternate" hreflang="en" href="${ORIGIN}/" />`,
     `<link rel="alternate" hreflang="fa" href="${ORIGIN}/fa" />`,
     `<link rel="alternate" hreflang="x-default" href="${ORIGIN}/" />`,
@@ -117,9 +131,7 @@ await writeFile(
 `,
 )
 
-// A real 404 for both languages, using the same stylesheet and fonts.
-const css = assetFiles.find((file) => file.endsWith('.css'))
-const sheet = css ? `/assets/${css}` : ''
+// A real 404 for both languages, using the same inline stylesheet and fonts.
 const notFound = {
   en: {
     title: 'Page not found — Binchitects',
@@ -157,8 +169,7 @@ for (const [lang, copy] of Object.entries(notFound)) {
     <title>${copy.title}</title>
     <meta name="description" content="${copy.description}" />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
-    ${sheet ? `<link rel="stylesheet" href="${sheet}" />` : ''}
-    <style>html{background:#0b0b0b;color-scheme:dark}body{margin:0}</style>
+    <style>${css}html{background:#0b0b0b;color-scheme:dark}body{margin:0}</style>
   </head>
   <body>
     <a class="skip-link" href="#main">${copy.skip}</a>

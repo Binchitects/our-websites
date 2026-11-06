@@ -1,5 +1,5 @@
 import { Chapter, ChapterHead } from '@/components/ui/Chapter'
-import { COMPARISON } from '@/lib/content'
+import { COMPARISON } from '@/lib/content/home'
 import { useLang } from '@/lib/i18n'
 
 function Mark({ value }: { value: string }) {

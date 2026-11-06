@@ -1,4 +1,4 @@
-import { FAQS } from '@/lib/content'
+import { FAQS } from '@/lib/content/faq'
 
 /** Numbered questions, ruled like a contents list. Native details: no script, prints open. */
 export function Faq({

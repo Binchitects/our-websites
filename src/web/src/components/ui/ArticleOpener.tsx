@@ -2,7 +2,7 @@ import { ArrowRight, ArrowUpRight } from 'lucide-react'
 import { Link } from '@/components/ui/LocalLink'
 
 import type { ReactNode } from 'react'
-import { SITE } from '@/lib/content'
+import { SITE } from '@/lib/site'
 
 export type OpenerAction = {
   label: string
