@@ -72,21 +72,27 @@ the mode.
 
 The origin sends `Cache-Control: public, max-age=0, s-maxage=300` for HTML and a
 one-year immutable header for hashed assets. Cloudflare does not cache HTML by
-default, so add a **Cache Rule** for each hostname:
+default, so add a **Cache Rule** covering both hostnames (one per zone if they
+are separate zones):
 
 - **Expression**: the host matches (`argus.binchitects.com` or
-  `binchitects.com`) and the path does not start with `/api/`.
+  `binchitects.com`); the path does not start with `/api/` or `/assets/`, is not
+  `/healthz`, and contains no file extension.
 - **Cache eligibility**: *Eligible for cache*.
-- **Edge TTL**: *Use cache-control header if present* — this honors the
-  five-minute `s-maxage`.
+- **Edge TTL**: *Ignore cache-control header and use this TTL* — 2 hours on
+  Free, 5–15 minutes on Pro and above. The browser still sees `max-age=0`
+  because browser TTL is respected.
 - **Browser TTL**: *Respect origin TTL* — the HTML revalidates, while hashed
   assets keep their year.
 
-Keep `/api/*` and `/healthz` out of the rule. After a deploy, purge the HTML:
-the old document points at old hashed asset names, which the new image no longer
-contains. The five-minute edge TTL caps that window even without a purge. Check
-the result with `curl -skI https://argus.binchitects.com/` and look for
-`cf-cache-status: HIT` on the second request.
+The complete guide, including the Free-plan Page Rules fallback, is
+[`CLOUDFLARE.md`](CLOUDFLARE.md).
+
+Keep `/api/*`, `/assets/*` and `/healthz` out of the rule. After a deploy,
+always purge the HTML: the old document points at old hashed asset names, which
+the new image no longer contains. On Free the edge TTL is two hours, so a purge
+is not optional. Check the result with `curl -skI https://argus.binchitects.com/`
+and look for `cf-cache-status: HIT` on the second request.
 
 Check the origin directly from the server:
 

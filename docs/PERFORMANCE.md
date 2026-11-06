@@ -94,21 +94,24 @@ npx lighthouse@12 https://argus.localhost:9443/ \
 
 ## Cloudflare
 
-The origin now advertises a five-minute shared-cache TTL, but Cloudflare does
-not cache HTML by default. Add a **Cache Rule** for each hostname:
+The origin advertises `s-maxage=300`, but it also sends `max-age=0` so browsers
+always revalidate after a deploy. Cloudflare treats `max-age=0` as uncacheable
+unless the Cache Rule overrides the edge TTL. Cloudflare also does not cache
+HTML by default.
 
-- **When incoming requests match**: the host (`argus.binchitects.com` or
-  `binchitects.com`) and the path does not start with `/api/`.
-- **Then**: *Eligible for cache*.
-- **Edge TTL**: *Use cache-control header if present* (this honors
-  `s-maxage=300`).
-- **Browser TTL**: *Respect origin* (the HTML revalidates; hashed assets keep
-  their year).
+Create one Cache Rule for both hostnames:
 
-Bypass `/api/*` and `/healthz` in the same rule. After a deploy, purge HTML from
-the Cloudflare cache: the old HTML points at old hashed asset names, which the
-new image no longer contains. A purge plus the five-minute TTL keeps that window
-small.
+- **Match**: the two hostnames, excluding `/api/`, `/assets/`, `/healthz` and
+  any path containing a file extension (assets, sitemap, robots).
+- **Cache eligibility**: *Eligible for cache*.
+- **Edge TTL**: *Ignore cache-control header and use this TTL* — 2 hours on
+  Free (the plan minimum), 5–15 minutes on Pro and above.
+- **Browser TTL**: *Respect origin* — the HTML stays `max-age=0` and revalidates.
+
+After a deploy, purge the HTML. The old document points at old hashed assets,
+which the new image no longer contains. The full click-by-click guide, the
+Free-plan Page Rules fallback, cache-key advice and verification commands are in
+[`CLOUDFLARE.md`](CLOUDFLARE.md).
 
 Cloudflare's own speed test measures the full path from its test location, not
 the origin. If it still reports a slow first view:

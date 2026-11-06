@@ -242,7 +242,8 @@ deploy/tls/            your certificate and key (gitignored)
 docker-compose.yml     Traefik, both sites and the API
 docs/DEPLOYMENT.md     DNS, TLS, local trial, backups, updates, hardening
 docs/SEO.md            indexing, hreflang, structured data, content and links
-docs/PERFORMANCE.md    payload, caching, Cloudflare rules, measured lab scores
+docs/PERFORMANCE.md    payload, caching, measured lab scores
+docs/CLOUDFLARE.md     Cache Rules, Page Rules fallback, verification
 docs/FONTS.md          subset fonts, variable ranges, licenses, regeneration
 ```
 
