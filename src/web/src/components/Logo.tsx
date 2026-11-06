@@ -12,14 +12,15 @@ export function Logo({ className }: { className?: string }) {
   const fa = useLang() === 'fa'
 
   return (
-    <Link to="/" className={cn('brand', className)} aria-label={fa ? "Argus Arena — خانه" : "Argus Arena — home"}>
-      <ArgusMark className="brand-mark" />
+    <Link to="/" className={cn('brand', className)}>
+      <ArgusMark className="brand-mark" label="" />
       <span className="brand-text">
         <span className="brand-name">
           Argus Arena<span className="period">.</span>
         </span>
         <span className="brand-sub">Binchitects</span>
       </span>
+      <span className="sr-only">{fa ? 'خانه' : 'home'}</span>
     </Link>
   )
 }

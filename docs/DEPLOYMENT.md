@@ -68,6 +68,26 @@ it encrypts the Cloudflare-to-origin hop too.
 Cloudflare's **Always Use HTTPS** can stay on. Purge the cache after changing
 the mode.
 
+#### Cache the prerendered HTML
+
+The origin sends `Cache-Control: public, max-age=0, s-maxage=300` for HTML and a
+one-year immutable header for hashed assets. Cloudflare does not cache HTML by
+default, so add a **Cache Rule** for each hostname:
+
+- **Expression**: the host matches (`argus.binchitects.com` or
+  `binchitects.com`) and the path does not start with `/api/`.
+- **Cache eligibility**: *Eligible for cache*.
+- **Edge TTL**: *Use cache-control header if present* — this honors the
+  five-minute `s-maxage`.
+- **Browser TTL**: *Respect origin TTL* — the HTML revalidates, while hashed
+  assets keep their year.
+
+Keep `/api/*` and `/healthz` out of the rule. After a deploy, purge the HTML:
+the old document points at old hashed asset names, which the new image no longer
+contains. The five-minute edge TTL caps that window even without a purge. Check
+the result with `curl -skI https://argus.binchitects.com/` and look for
+`cf-cache-status: HIT` on the second request.
+
 Check the origin directly from the server:
 
 ```bash

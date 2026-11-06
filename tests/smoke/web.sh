@@ -50,13 +50,18 @@ for header in content-security-policy x-content-type-options referrer-policy per
   grep -qi "^$header:" "$tmp/headers" || fail "the site does not send $header"
 done
 grep -qi "script-src 'self'" "$tmp/headers" || fail "the CSP does not restrict scripts to self"
-pass "security headers are present"
+grep -qi 'cache-control:.*s-maxage=300' "$tmp/headers" || fail "HTML is not edge-cacheable"
+pass "security headers and the HTML edge TTL are present"
 
 asset="$(grep -o '/assets/[^"]*\.js' "$tmp/body" | head -1 || true)"
 [ -n "$asset" ] || fail "no built script was found in the page"
+font="$(grep -o '/assets/[^"]*\.woff2' "$tmp/body" | head -1 || true)"
+[ -n "$font" ] || fail "no font preload was found in the page"
 fetch "$BASE_URL$asset"
 grep -qi 'cache-control:.*max-age=31536000' "$tmp/headers" || fail "hashed assets are not cached for a year"
-pass "the built script is served and cached"
+fetch "$BASE_URL$font"
+grep -qi 'cache-control:.*immutable' "$tmp/headers" || fail "hashed fonts are not cached as immutable"
+pass "the built script and the preloaded font are cached for a year"
 
 [ "$(code "$BASE_URL/sitemap.xml")" = "200" ] || fail "sitemap.xml is missing"
 [ "$(code "$BASE_URL/robots.txt")" = "200" ] || fail "robots.txt is missing"

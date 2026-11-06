@@ -1,8 +1,60 @@
-@import '@fontsource-variable/archivo/wdth.css';
-@import '@fontsource-variable/vazirmatn/index.css';
-@import '@fontsource-variable/ibm-plex-sans/index.css';
-@import '@fontsource/ibm-plex-mono/400.css';
-@import '@fontsource/ibm-plex-mono/500.css';
+/*
+ * Self-hosted subsets. Each file carries only the glyphs these pages use, so
+ * the whole type system costs roughly half of the original font packages.
+ * The Persian faces are split by script and merged again with unicode-range.
+ */
+@font-face {
+  font-family: 'Archivo Variable';
+  font-style: normal;
+  font-display: swap;
+  font-weight: 100 720;
+  font-stretch: 100% 112%;
+  src: url('../assets/fonts/archivo.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: 'IBM Plex Sans Variable';
+  font-style: normal;
+  font-display: swap;
+  font-weight: 100 700;
+  src: url('../assets/fonts/plex-sans.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: 'IBM Plex Mono';
+  font-style: normal;
+  font-display: swap;
+  font-weight: 400;
+  src: url('../assets/fonts/plex-mono-400.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: 'IBM Plex Mono';
+  font-style: normal;
+  font-display: swap;
+  font-weight: 500;
+  src: url('../assets/fonts/plex-mono-500.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: 'Vazirmatn Variable';
+  font-style: normal;
+  font-display: swap;
+  font-weight: 100 720;
+  src: url('../assets/fonts/vazirmatn-arabic.woff2') format('woff2');
+  unicode-range: U+0600-06FF, U+0750-077F, U+08A0-08FF, U+200C-200F, U+FB50-FDFF, U+FE70-FEFF;
+}
+
+@font-face {
+  font-family: 'Vazirmatn Variable';
+  font-style: normal;
+  font-display: swap;
+  font-weight: 100 720;
+  src: url('../assets/fonts/vazirmatn-latin.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC,
+    U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215,
+    U+FEFF, U+FFFD;
+}
 
 /*
  * ARGUS — printed matter for a private machine.
@@ -21,7 +73,7 @@
   --ink: #0f1410;
   --ink-2: #2a312b;
   --muted: #58615a;
-  --faint: #687168;
+  --faint: #5f675f;
   --rule: #c5cec3;
   --rule-strong: #0f1410;
   --iris: #1746e0;
@@ -32,7 +84,7 @@
 
   /* The Argus spectrum: one colour for each kind of work. */
   --c-iris: var(--iris);
-  --c-cyan: #007f99;
+  --c-cyan: #00738a;
   --c-teal: #0b7a6a;
   --c-violet: #5b3bd6;
   --c-amber: #8a5400;
@@ -1241,7 +1293,7 @@ html[data-theme='light'] .theme-icon-sun {
   font-size: 8px;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: var(--faint);
+  color: var(--muted);
 }
 
 /* ---------- Chapters ---------- */
@@ -2524,6 +2576,9 @@ html[data-theme='light'] .theme-icon-sun {
 .footer-colophon a {
   font-size: inherit;
   color: var(--muted);
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 2px;
 }
 
 .footer-word {

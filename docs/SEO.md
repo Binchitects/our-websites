@@ -24,9 +24,12 @@ repository can do is remove every technical reason a page would rank badly.
   `WebSite`.
 - **Mobile and RTL.** Both languages are responsive; Persian has `lang="fa"`,
   `dir="rtl"` and a native Persian face.
-- **Performance basics.** Text is in the HTML, assets are hashed and cached for
-  a year, HTML is gzipped, fonts are self-hosted with `font-display: swap`, and
-  there are no third-party scripts or external fonts.
+- **Performance.** Text is in the HTML, routes are split into separate chunks,
+  hashed assets are cached for a year, HTML carries a five-minute shared-cache
+  TTL, fonts are self-hosted subsets with `font-display: swap`, and there are no
+  third-party scripts or external font requests. The measured lab scores and the
+  Cloudflare cache rule are in [`PERFORMANCE.md`](PERFORMANCE.md); the font
+  subsets and licenses are in [`FONTS.md`](FONTS.md).
 - **Privacy.** No analytics or tracking script is loaded, so there is nothing
   to block rendering or slow the page.
 

@@ -31,8 +31,8 @@ Three images, built from this repository, deployed together.
 ```
 
 The sites are designed to run the way the product does: on your own hardware.
-They have no external runtime dependency — no analytics, no CDN, no third-party
-fonts, no database server. The API has **no NuGet packages**, so it builds
+They have no third-party runtime code — no analytics, no external font host, no
+database server — and they run the same with or without a CDN in front. The API has **no NuGet packages**, so it builds
 without a package feed; the two web images still need npm at build time. Once
 built, the stack runs on an air-gapped network.
 
@@ -142,7 +142,7 @@ The API stores contact requests under `src/api/data/` in development and at
 ## Tests
 
 ```bash
-cd src/web && npm test          # 16 unit/component tests (Vitest + Testing Library)
+cd src/web && npm test          # 19 unit/component tests (Vitest + Testing Library)
 cd src/binchitects && npm test  # 5 tests for the studio page
 dotnet build                    # the API builds with zero packages
 tests/smoke/api.sh              # against a running stack (API endpoints)
@@ -242,6 +242,8 @@ deploy/tls/            your certificate and key (gitignored)
 docker-compose.yml     Traefik, both sites and the API
 docs/DEPLOYMENT.md     DNS, TLS, local trial, backups, updates, hardening
 docs/SEO.md            indexing, hreflang, structured data, content and links
+docs/PERFORMANCE.md    payload, caching, Cloudflare rules, measured lab scores
+docs/FONTS.md          subset fonts, variable ranges, licenses, regeneration
 ```
 
 ## Design
@@ -288,6 +290,28 @@ Vazirmatn, rules and numbers, and it links to the product
 Everything is a static build; no API and no external requests. It is bilingual
 too: English at `/`, Persian at `/fa`, each with its own prerendered HTML and
 metadata.
+
+## Performance
+
+Both sites are prerendered, route-split and self-hosted, with no third-party
+script on the page. The two prefetched font faces are subset to the glyphs the
+sites use, and HTML carries a five-minute shared-cache TTL so an edge can answer
+without going back to the origin.
+
+Lighthouse 12, mobile, simulated slow 4G, production images:
+
+| Page | Performance | Accessibility | SEO | LCP | Transfer |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| Argus, English | 97 | 100 | 100 | 2.3 s | 280 KiB |
+| Argus, Persian | 96 | 100 | 100 | 2.5 s | 292 KiB |
+| Studio, English | 100 | 100 | 100 | 1.7 s | 182 KiB |
+| Studio, Persian | 99 | 100 | 100 | 1.8 s | 192 KiB |
+
+These are lab numbers on one host, not field data. The first request after a
+deploy still pays the origin round trip; after that Cloudflare can serve the
+HTML from cache. [`docs/PERFORMANCE.md`](docs/PERFORMANCE.md) has the exact
+headers, the Cache Rule, the measurement commands and the remaining payload
+breakdown. [`docs/FONTS.md`](docs/FONTS.md) explains the font subsets.
 
 ## Two languages
 

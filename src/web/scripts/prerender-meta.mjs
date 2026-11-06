@@ -22,8 +22,8 @@ const font = (prefix) => assetFiles.find((file) => file.startsWith(prefix) && fi
 function preloads(lang) {
   const names =
     lang === 'fa'
-      ? ['vazirmatn-arabic-wght-normal', 'archivo-latin-wdth-normal']
-      : ['archivo-latin-wdth-normal', 'ibm-plex-sans-latin-wght-normal']
+      ? ['vazirmatn-arabic', 'archivo']
+      : ['archivo', 'plex-sans']
   return names
     .map(font)
     .filter(Boolean)
@@ -35,7 +35,7 @@ function preloads(lang) {
 }
 const localized = (route, lang) => (lang === 'fa' ? (route.path === '/' ? '/fa' : `/fa${route.path}`) : route.path)
 
-function withMeta(html, route, lang) {
+async function withMeta(html, route, lang) {
   const local = lang === 'fa' ? route.fa : route
   const title = escape(local.title)
   const description = escape(local.description)
@@ -59,7 +59,7 @@ function withMeta(html, route, lang) {
   html = html.replace(/<meta\s+name="twitter:title"\s+content="[^"]*"\s*\/?>/, `<meta name="twitter:title" content="${title}" />`)
   html = html.replace(/<meta\s+name="twitter:description"\s+content="[^"]*"\s*\/?>/, `<meta name="twitter:description" content="${description}" />`)
 
-  const markup = render(localized(route, lang))
+  const markup = await render(localized(route, lang))
   html = html.replace('<div id="root"></div>', `<div id="root">${markup}</div>`)
   if (!html.includes(`<div id="root">${markup}</div>`)) {
     throw new Error(`Could not render ${localized(route, lang)} into its shell.`)
@@ -84,7 +84,7 @@ function withMeta(html, route, lang) {
 
 for (const route of routes) {
   for (const lang of ['en', 'fa']) {
-    const html = withMeta(template, route, lang)
+    const html = await withMeta(template, route, lang)
     const local = localized(route, lang)
     if (local === '/') {
       await writeFile(path.join(DIST, 'index.html'), html)
@@ -104,7 +104,7 @@ for (const lang of ['en', 'fa']) {
     lang === 'fa' ? 'آن صفحه وجود ندارد. از پلتفرم، Code Arena، Argus یا کد منبع شروع کنید.' : 'That page does not exist. Start from the platform, Code Arena, Argus, or the source.',
   )
   const url = `${ORIGIN}${routePath}`
-  const markup = render(routePath)
+  const markup = await render(routePath)
 
   let html = template
     .replace(/<html\s+[^>]*>/, `<html lang="${lang}" dir="${lang === 'fa' ? 'rtl' : 'ltr'}" data-theme="dark">`)

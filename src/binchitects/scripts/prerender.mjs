@@ -10,8 +10,8 @@ const font = (prefix) => assetFiles.find((file) => file.startsWith(prefix) && fi
 function preloads(lang) {
   const names =
     lang === 'fa'
-      ? ['vazirmatn-arabic-wght-normal', 'archivo-latin-wdth-normal']
-      : ['archivo-latin-wdth-normal', 'ibm-plex-sans-latin-wght-normal']
+      ? ['vazirmatn-arabic', 'archivo']
+      : ['archivo', 'plex-sans']
   return names
     .map(font)
     .filter(Boolean)
