@@ -25,6 +25,12 @@ viewport meta, before the inline sheet, so the two faces start downloading at
 the first bytes of the document. Lighthouse now reports no render-blocking
 requests at all.
 
+**Hydration is deprioritised.** The Argus prerender marks the module script and
+its `modulepreload` links `fetchpriority="low"`. The document, CSS and fonts get
+the first bandwidth; the HTML is already interactive as links and text, and the
+React handlers arrive shortly after. This is what moved FCP from 1.7 s to
+1.4–1.6 s in the lab.
+
 **Subset fonts.** Fontsource packages were removed. The committed `.woff2`
 files carry only the glyphs the sites use, split by script and clamped to the
 variable ranges the CSS actually asks for. A language preloads two faces rather
@@ -54,15 +60,15 @@ simulated slow 4G. These are lab numbers, not field data.
 
 | Page | Performance | Accessibility | Best practices | SEO | FCP | LCP | CLS | Transfer |
 | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
-| Argus, English | 97 | 100 | 100 | 100 | 1.7 s | 2.3 s | 0 | 272 KiB |
-| Argus, Persian | 96 | 100 | 100 | 100 | 2.0 s | 2.5 s | 0 | 284 KiB |
+| Argus, English | 98 | 100 | 100 | 100 | 1.6 s | 2.2 s | 0 | 272 KiB |
+| Argus, Persian | 98 | 100 | 100 | 100 | 1.4 s | 2.4 s | 0 | 284 KiB |
 | Studio, English | 100 | 100 | 100 | 100 | 1.4 s | 1.7 s | 0 | 182 KiB |
-| Studio, Persian | 100 | 100 | 100 | 100 | 1.4 s | 1.7 s | 0 | 191 KiB |
+| Studio, Persian | 99 | 100 | 100 | 100 | 1.4 s | 1.8 s | 0 | 191 KiB |
 
 Both sites score **1.0** on `render-blocking-resources` and
 `uses-long-cache-ttl` in Lighthouse. The remaining Argus LCP gap is the webfont
-swap: FCP lands at 1.7 s, then the variable body face finishes about 0.6 s later
-and repaints the hero text. The alternative is `font-display: optional`, which
+swap: FCP lands at 1.4–1.6 s, then the variable body face finishes and repaints
+the hero text. The alternative is `font-display: optional`, which
 would keep a system fallback on slow first visits; that trade is not taken here.
 
 

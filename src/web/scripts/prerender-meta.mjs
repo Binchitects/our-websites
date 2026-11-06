@@ -27,7 +27,11 @@ function inlineCss(html) {
   return inlined
 }
 
-const template = inlineCss(await readFile(path.join(DIST, 'index.html'), 'utf8'))
+let template = inlineCss(await readFile(path.join(DIST, 'index.html'), 'utf8'))
+// Text and fonts come first; hydration can finish a little later.
+template = template
+  .replace(/<script type="module"/g, '<script type="module" fetchpriority="low"')
+  .replace(/<link rel="modulepreload"/g, '<link rel="modulepreload" fetchpriority="low"')
 const font = (prefix) => assetFiles.find((file) => file.startsWith(prefix) && file.endsWith('.woff2'))
 
 function preloads(lang) {

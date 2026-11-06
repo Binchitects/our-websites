@@ -304,10 +304,10 @@ Lighthouse 12, mobile, simulated slow 4G, production images:
 
 | Page | Performance | Accessibility | SEO | LCP | Transfer |
 | --- | ---: | ---: | ---: | ---: | ---: |
-| Argus, English | 97 | 100 | 100 | 2.3 s | 272 KiB |
-| Argus, Persian | 96 | 100 | 100 | 2.5 s | 284 KiB |
+| Argus, English | 98 | 100 | 100 | 2.2 s | 272 KiB |
+| Argus, Persian | 98 | 100 | 100 | 2.4 s | 284 KiB |
 | Studio, English | 100 | 100 | 100 | 1.7 s | 182 KiB |
-| Studio, Persian | 100 | 100 | 100 | 1.7 s | 191 KiB |
+| Studio, Persian | 99 | 100 | 100 | 1.8 s | 191 KiB |
 
 These are lab numbers on one host, not field data. The first request after a
 deploy still pays the origin round trip; after that Cloudflare can serve the
