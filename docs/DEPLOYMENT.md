@@ -152,6 +152,47 @@ If you cannot use a valid certificate yet, use **Full** (not strict), which
 encrypts the Cloudflare-to-origin hop but skips validation. It is temporary;
 **Flexible** should not be left enabled.
 
+If you already installed a **Cloudflare Origin CA** certificate and still see
+526, the certificate is probably not the one Traefik is serving:
+
+```bash
+# What is in the files named by .env?
+openssl x509 -in deploy/tls/fullchain.pem -noout \
+  -subject -issuer -dates -ext subjectAltName
+
+# What is Traefik actually presenting on 443?
+openssl s_client -connect 127.0.0.1:443 -servername argus.binchitects.com \
+  </dev/null 2>/dev/null \
+  | openssl x509 -noout -subject -issuer -dates -ext subjectAltName
+```
+
+The second command must show the Origin CA issuer and the exact hostname in
+the SAN. If it shows `binchitects.localhost`, `TRAEFIK DEFAULT CERT`, or a
+certificate for only one of the two names, the bind mount or the certificate
+contents are wrong.
+
+Also check:
+
+- **SAN coverage.** The Origin CA certificate must include
+  `binchitects.com` and `argus.binchitects.com`; `*.binchitects.com` covers
+  `argus`, but not the apex.
+- **Key pair.** The key in `TLS_KEY_FILE` must match the certificate. A
+  mismatch makes Traefik fall back to its default certificate.
+- **Reload.** Recreate the edge after replacing files:
+  `docker compose up -d --force-recreate edge`.
+- **DNS.** Both hostnames must reach the same origin. A stale DNS record for
+  `argus` can make only that hostname fail.
+- **Tunnel.** If Cloudflare reaches the stack through `cloudflared`, set the
+  tunnel origin to `https://localhost:443` and enable **No TLS Verify** for an
+  Origin CA certificate; `cloudflared` validates against the system trust
+  store, which does not contain the Cloudflare Origin CA.
+
+An **edge certificate** from Cloudflare (the public certificate visitors see)
+cannot be installed on the origin: Cloudflare does not export its private key.
+The certificate needed for Full (strict) is the one under **SSL/TLS → Origin
+Server → Create Certificate**.
+
+
 Check the origin directly from the server:
 
 ```bash
